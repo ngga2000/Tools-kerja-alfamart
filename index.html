@@ -251,21 +251,32 @@
     const database = firebase.database();
 
     // =========================================================
-    // 2. SISTEM KODE TOKO
+    // 2. SISTEM KODE TOKO (Wajib 4 Karakter, Harus Ada Huruf & Angka, Kapital)
     // =========================================================
     let kodeTokoAktif = localStorage.getItem('mpkt_kode_toko');
-    let dbRef = null; // Referensi database ke toko aktif
-    let dataSO = [];  // Array penyimpan data dari server
+    let kodeTokoAktif = localStorage.getItem('mpkt_kode_toko');
+    let dbRef = null; 
+    let dataSO = [];  
 
     function cekKodeToko() {
         if (!kodeTokoAktif) {
-            let input = prompt("Selamat datang! Masukkan KODE TOKO Anda (Contoh: I004):");
-            if (input && input.trim() !== "") {
-                kodeTokoAktif = input.trim().toUpperCase();
-                localStorage.setItem('mpkt_kode_toko', kodeTokoAktif);
+            let input = prompt("Masukkan KODE TOKO Anda (Contoh: AB12 atau I004):");
+            if (input) {
+                let formattedInput = input.trim().toUpperCase();
+                // Validasi: Panjang tepat 4 karakter, harus mengandung minimal 1 huruf dan 1 angka
+                let regex = /^(?=.*[A-Z])(?=.*\d)[A-Z0-9]{4}$/; 
+                
+                if (regex.test(formattedInput)) {
+                    kodeTokoAktif = formattedInput;
+                    localStorage.setItem('mpkt_kode_toko', kodeTokoAktif);
+                } else {
+                    alert("Format Kode Toko Salah!\nKetentuan:\n- Harus tepat 4 karakter\n- Harus ada gabungan Huruf dan Angka\n- Huruf harus Kapital (Contoh: AB12)");
+                    cekKodeToko(); // Suruh ulang dari awal
+                    return;
+                }
             } else {
                 alert("Kode Toko wajib diisi untuk menggunakan aplikasi!");
-                cekKodeToko(); // Paksa isi
+                cekKodeToko(); 
                 return;
             }
         }
@@ -274,12 +285,20 @@
     }
 
     function gantiKodeToko() {
-        let input = prompt("Ganti Kode Toko (Saat ini: " + kodeTokoAktif + "):", kodeTokoAktif);
-        if (input && input.trim() !== "") {
-            kodeTokoAktif = input.trim().toUpperCase();
-            localStorage.setItem('mpkt_kode_toko', kodeTokoAktif);
-            document.getElementById('storeName').innerText = "KODE TOKO: " + kodeTokoAktif;
-            mulaiMendengarkanDatabase();
+        let input = prompt("Ganti Kode Toko (4 Karakter, Gabungan Huruf & Angka, Cth: AB12):", kodeTokoAktif);
+        if (input) {
+            let formattedInput = input.trim().toUpperCase();
+            let regex = /^(?=.*[A-Z])(?=.*\d)[A-Z0-9]{4}$/;
+            
+            if (regex.test(formattedInput)) {
+                kodeTokoAktif = formattedInput;
+                localStorage.setItem('mpkt_kode_toko', kodeTokoAktif);
+                document.getElementById('storeName').innerText = "KODE TOKO: " + kodeTokoAktif;
+                mulaiMendengarkanDatabase();
+            } else {
+                alert("Format Salah!\nKetentuan:\n- Harus tepat 4 karakter\n- Harus ada gabungan Huruf dan Angka\n- Huruf harus Kapital (Contoh: AB12)");
+                gantiKodeToko();
+            }
         }
     }
 
