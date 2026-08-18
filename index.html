@@ -6,7 +6,7 @@
     <title>MPKT V2 2026 - SO Rak Online</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     
-    <!-- FIREBASE SDK (Versi 8 Compat agar lebih mudah untuk pemula) -->
+    <!-- FIREBASE SDK (Versi 8 Compat) -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -232,18 +232,23 @@
 
 <script>
     // =========================================================
-    // 1. MASUKKAN KONFIGURASI FIREBASE KAMU DI SINI
+    // 1. KONFIGURASI FIREBASE (Sudah disesuaikan)
     // =========================================================
     const firebaseConfig = {
-  apiKey: "AIzaSyB8e3YpfEbD7J9RbkzhIeDuRtzLr0921kg",
-  authDomain: "tool-kerja.firebaseapp.com",
-  databaseURL: "https://tool-kerja-default-rtdb.firebaseio.com",
-  projectId: "tool-kerja",
-  storageBucket: "tool-kerja.firebasestorage.app",
-  messagingSenderId: "142257497654",
-  appId: "1:142257497654:web:a89e8c47a49292b2939a97",
-  measurementId: "G-0ZWS8Q9WFL"
-};
+        apiKey: "AIzaSyB8e3YpfEbD7J9RbkzhIeDuRtzLr0921kg",
+        authDomain: "tool-kerja.firebaseapp.com",
+        projectId: "tool-kerja",
+        storageBucket: "tool-kerja.firebasestorage.app",
+        messagingSenderId: "142257497654",
+        appId: "1:142257497654:web:a89e8c47a49292b2939a97",
+        measurementId: "G-0ZWS8Q9WFL"
+    };
+
+    // Inisialisasi Firebase
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const database = firebase.database();
 
     // =========================================================
     // 2. SISTEM KODE TOKO
@@ -362,9 +367,52 @@
 
     /* ================= FUNGSI LOKAL (UI & UTILS) ================= */
     const masterDataRak = [
-        "AT1 - REG BEVERAGES 1", "AU1 - CHILLER 1", "AU2 - CHILLER 2", "AZ1 - FDU GALON 5 LITER", 
-        "BC1 - BREAKFAST PN", "CB1 - SN ACR ROYCO", "CT1 - STAPLENEED PN", "CW1 - NOODLE PN" 
-        // Potong array ini sebentar untuk contoh, masukkan master rak lengkapmu seperti di kode sebelumnya!
+        "AT1 - REG BEVERAGES 1", "AU1 - CHILLER 1", "AU2 - CHILLER 2", "AU3 - CHILLER 3", "AU4 - CHILLER 4", 
+        "AU5 - CHILLER 5", "AU6 - CHILLER 6", "AU7 - CHILLER 7", "AU8 - CHILLER 8", "AZ1 - FDU GALON 5 LITER", 
+        "BC1 - BREAKFAST PN", "BC2 - BREAKFAST PN", "CB1 - SN ACR ROYCO", "CF1 - SN WIRE RACK", "CH1 - ACR/TRAY STAPLLE 1", 
+        "CT1 - STAPLENEED PN", "CT2 - STAPLENEED PN", "CT3 - STAPLENEED PN", "CT4 - STAPLENEED PN", "CW1 - NOODLE PN", 
+        "CW2 - NOODLE PN", "CW3 - NOODLE PN", "DB1 - BISC+CONFECT-CONF 3 SSN", "DD1 - BISC+CONFECT-CSP PEZ CANDY", 
+        "DE1 - BISC+CONFECT 1", "DE2 - BISC+CONFECT 1", "DE3 - BISC+CONFECT 3", "DE4 - BISC+CONFECT 4", 
+        "DE5 - BISC+CONFECT 5", "DE6 - BISC+CONFECT 6", "EB1 - SNACK-HEALTHY", "EC1 - SNACK-WS A BRAND", 
+        "ED1 - SNACK-WS SAMBOY 1", "EE1 - SNACK-SIDE WS SAMBOY", "EF1 - SNACK-CSP KIMBO", "EI1 - SNACK 1", 
+        "E12 - SNACK 2", "E13 - SNACK 3", "E14 - SNACK 4", "E15 - SNACK 5", "E16 - SNACK 6", "EJ1 - PRINGLES DBL", 
+        "FE1 - MILK & DIAPERS PN 1", "FE2 - MILK & DIAPERS PN 2", "FE3 - MILK & DIAPERS PN 3", "FE4 - MILK & DIAPERS PN 4", 
+        "FE5 - MILK & DIAPERS PN 5", "FE6 - MILK & DIAPERS PN 6", "FE7 - MILK & DIAPERS PN 7", "FE8 - MILK & DIAPERS PN 8", 
+        "GA1 - BW KIRI", "GB1 - BW TENGAH", "GB2 - BW KANAN", "GD1 - TP ELEKTRIK", "HB1 - MEJA COC ACC 1", 
+        "HB2 - MEJA COC ACC 2", "HB3 - MEJA COC ACC 3", "HB4 - MEJA COC ACC 4", "HB5- MEJA COC ACC 5", 
+        "HB6 - MEJA COC ACC 6", "HB7 - MEJA COC ACC 7", "HC1 - COC-ACR SILVERQUEEN", "HD1 - COC-ACR CADBURY", 
+        "HE1 - COC-ACR BATERAI HOOK", "HF1 - COC-ACR BATERAI SUDUT", "HG1 - COC-ACR KONDOM", "HH1 - COC-ACR STREPSILS", 
+        "HI1 - COC-ACR FISHERMAN'S", "HL1 - COC-MINI COC", "HM1 - COC-ACR CHUPA MEJA OLD", "HN1 - COC-ACR CHUPA MEJA ACC", 
+        "H01 - COC-AREA MATERAI", "HS1 - RAK TRAY NDS", "HT1 - SOUR BELT 1M", "JA1 - TOYS", "JC1 - TOYS-STD ROTATING", 
+        "KI1 - PC HB-ACR INSERT 1", "KJ1 - PC HB-ACR HC 1", "KL1 - ACR SHEET MASK 1 HB", "K01 - PC HB-ACR DECOR 1", 
+        "KP1 - PC HB-STD PINKBR 1", "KS1 - PLU K ACR HAIR COLOR 3/KS1", "MC1 - MEDICINE-BABY-ACR 1", 
+        "MD1 - MEDICINE-BABY-ACR 2", "ME1 - MEDICINE-BABY-ACR 3", "MI1 - MEDICINE & BABY CARE PN1", 
+        "M12 - MEDICINE & BABY CARE PN2", "NA1 - FREEZER ICE WALLS 1", "NG1 - FREEZER ICW SHR GLICO-AICE 1", 
+        "NP1 - FREEZER NUG BENFARM 1", "OA1 - BREAD CORNER 1", "OA2 - BREAD CORNER 2", "OC1 - TRAY KEJU", 
+        "PA1 - RAK DISPLAY RTD SIAP SEDUH", "PA2 - RAK TAMPUNG RTD SIAP SEDUH", "PB1 - RAK DISPLAY ACR NOODLE CUP 1", 
+        "PB2 - RAK DISPLAY ACR NOODLE CUP 2", "PB3 - RAK TAMPUNG ACR NOODLE CUP", "Q31 - SANDULT 1R", 
+        "Q32 - SANDULT 2R", "Q41 - MISCSTA 1R", "Q42 - MISCSTA 2R", "Q51 - HH 1R", "Q52 - HH 2R", "Q53 - HH 3R NP", 
+        "Q54 - HH 4R NP", "Q55 - HH 5R NP", "Q56 - HH 6R", "Q61 - RAK ONEPRICE (1)", "QA1 - RAK TISSUE 1R", 
+        "QF1 - ACR MISC", "QG1 - WS MASKER (EX MOTORIS)", "QH1 - WS/GD KARAKTER", "QI1 - WDU CSP STICKER", 
+        "QJ1 - WS AKSESORIS", "QK1 - WS AIR FRESHNER", "QL1 - WS UNDERWEAR", "QM1 - SIDE WS AKSESORIS", 
+        "Q01 - AREA AMPLOP FESTIVE", "QP1 - FDU SRK KERTAS KADO", "QR1 - WS CORONA", "QS1 - ACR STATIONARY BERTINGKAT", 
+        "QU1 - ACR KAMPER", "QX1 - STD MASKER B21", "QY1 - ACR PET FOOD NEW", "S11 - PERSONAL & TOOTH CARE 1", 
+        "S12 - PERSONAL & TOOTH CARE 2", "S13 - PERSONAL & TOOTH CARE", "S14 - PERSONAL & TOOTH CARE 4", 
+        "S15 - PERSONAL & TOOTH CARE 5", "S16 - PERSONAL & TOOTH CARE 6", "S17 - PERSONAL & TOOTH CARE 7", 
+        "S18 - PERSONAL & TOOTH CARE 8", "Z31 - AMBALAN SIP", "Z51 - RAK SO IC/AC/AM", "ZAO - MACHINE ICE SLUSH", 
+        "ZA1 - MACHINE LIPTON", "ZA2 - MACHINE DELONGHI", "ZA4 - MACHINE FRANKE", "ZA5 - MACHINE HOTSIGN", 
+        "ZA6 - ACR POJOK SEDUH", "ZA7 - MACHINE MILO", "ZA8 - MACHINE NESTLE KALINA", "ZA9 - MACHINE POTUM", 
+        "ZAA - MACHINE VENUSTA", "ZABRAK RAW-RPC-CONDIMENT", "ZAC - FREEZER ICE CUBE", "ZAD - FREEZER BOILED", 
+        "ZAE - OPEN FREZER A-YELLOW", "ZAF - FREZER ES PUTER HOMI", "ZAG - BEANSPOT - RTD COFFE", 
+        "ZAI - BEANSPOT - SHOWCASE BKRY FPG 1", "ZAJ - BEANSPOT - SHOWCASE BKRY FPG 2", "ZAK - BEANSPOT JOLLY TIME", 
+        "ZAL - BEANSPOT BASIC - ACR RTD", "ZAM - BEANSPOT BASIC - ACR SACHET", "ZAN - ACR NOD CUP BSC", 
+        "ZB1 - Z-E VOUCHER 1", "ZB2 - Z-E VOUCHER 2", "ZC1 - Z-PLU K & SURAT TUGAS 1", "ZC2 - Z-PLU K & SURAT TUGAS 2", 
+        "ZC3 - Z-PLU K & SURAT TUGAS 3", "ZC4 - Z-PLU K & SURAT TUGAS 4", "ZC5 - Z-PLU K & SURAT TUGAS 5", 
+        "ZD1 - Z-EMBALASI 1", "ZG1 - Z-RAK ADD DIAPERS 1", "ZI1 - Z-PROMOTION GOODS&BM 1", "ZK1 - Z-GD ONESHOOT 1", 
+        "ZL1 - Z-GD LOKALPOLITIS 1", "ZM1 - RACK ON FREEZER", "ZN1 - GB TAG NH FOOD", "ZN2 - GB TAG NH NFOOD", 
+        "ZQ1 - Z-GDF AIR MINERAL 1.5", "ZQ1Z - GDF AIR MINERAL 1.5", "ZR1 - Z-FDU DISPLAY GALON", 
+        "ZS1 - Z-FDU AIR CUP KARTON", "ZS1 - ZFDU AIR CUP KARTON", "ZU1 - FDU FOCUS TELUR", "ZV1 - Z-FDU CORONA", 
+        "ZW1 - FLOOR BAZAAR"
     ];
     const uniqueMasterRak = [...new Set(masterDataRak)];
 
