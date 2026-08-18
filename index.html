@@ -234,21 +234,16 @@
     // =========================================================
     // 1. MASUKKAN KONFIGURASI FIREBASE KAMU DI SINI
     // =========================================================
-    Const firebaseConfig = {
-    apiKey: "AIzaSyB8e3YpfEbD7J9RbkzhIeDuRtzLr0921kg",
-    authDomain: "tool-kerja.firebaseapp.com",
-    databaseURL: "https://tool-kerja-default-rtdb.firebaseio.com",
-    projectId: "tool-kerja",
-    storageBucket: "tool-kerja.firebasestorage.app",
-    messagingSenderId: "142257497654",
-    appId: "1:142257497654:web:a89e8c47a49292b2939a97",
-    measurementId: "G-0ZWS8Q9WFL"
+    const firebaseConfig = {
+  apiKey: "AIzaSyB8e3YpfEbD7J9RbkzhIeDuRtzLr0921kg",
+  authDomain: "tool-kerja.firebaseapp.com",
+  databaseURL: "https://tool-kerja-default-rtdb.firebaseio.com",
+  projectId: "tool-kerja",
+  storageBucket: "tool-kerja.firebasestorage.app",
+  messagingSenderId: "142257497654",
+  appId: "1:142257497654:web:a89e8c47a49292b2939a97",
+  measurementId: "G-0ZWS8Q9WFL"
 };
-    // Inisialisasi Firebase
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
-    const database = firebase.database();
 
     // =========================================================
     // 2. SISTEM KODE TOKO
