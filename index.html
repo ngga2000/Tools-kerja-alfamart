@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MPKT V2 2026 - SO Rak Online</title>
+
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 
     <style>
@@ -168,6 +169,10 @@
             background: #fff;
         }
 
+        .form-control:focus {
+            border-color: var(--alfa-red);
+        }
+
         textarea.form-control {
             resize: vertical;
             min-height: 60px;
@@ -258,6 +263,11 @@
             text-align: center;
         }
 
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
         .btn-primary {
             background-color: var(--alfa-red);
             flex: 2;
@@ -265,26 +275,6 @@
 
         .btn-secondary {
             background-color: #6c757d;
-            flex: 1;
-        }
-
-        .btn-success {
-            background-color: var(--success-green);
-            flex: 1;
-        }
-
-        .btn-info {
-            background-color: var(--info-blue);
-            flex: 1;
-        }
-
-        .btn-warning {
-            background-color: var(--backup-orange);
-            flex: 1;
-        }
-
-        .btn-danger {
-            background-color: var(--danger-red);
             flex: 1;
         }
 
@@ -347,6 +337,10 @@
             font-size: 11px;
         }
 
+        .rak-name {
+            padding-right: 8px;
+        }
+
         .status-badge {
             padding: 4px 6px;
             border-radius: 4px;
@@ -355,6 +349,7 @@
             display: inline-flex;
             align-items: center;
             gap: 4px;
+            white-space: nowrap;
         }
 
         .status-sudah {
@@ -452,6 +447,13 @@
             display: inline-block;
         }
 
+        .empty-data {
+            text-align: center;
+            padding: 20px;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
         @media (min-width: 768px) {
             .app-container {
                 min-height: calc(100vh - 40px);
@@ -472,6 +474,13 @@
                 gap: 20px;
             }
         }
+
+        @media (max-width: 500px) {
+            .form-row {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
     </style>
 </head>
 
@@ -486,11 +495,11 @@
 
         <p>
             <i class="fas fa-boxes"></i>
-            MPKT V.2 2026 - ONLINE MODE
+            MPKT V.2 2026 - SUPABASE ONLINE
         </p>
 
         <div id="onlineStatus">
-            Menghubungkan...
+            Connecting...
         </div>
     </header>
 
@@ -505,6 +514,7 @@
 
         <div class="so-top-row">
 
+            <!-- FORM INPUT -->
             <div class="card" id="formSORakContainer">
 
                 <div class="card-header">
@@ -515,7 +525,10 @@
                 <input type="hidden" id="soEditId" value="">
 
                 <div class="form-group">
-                    <label class="form-label">Rak / Area</label>
+
+                    <label class="form-label">
+                        Rak / Area
+                    </label>
 
                     <div class="custom-dropdown-container">
 
@@ -575,7 +588,7 @@
                             Nominal Selisih (Rp)
                         </label>
 
-                        <div style="display:flex; gap:5px;">
+                        <div style="display:flex;gap:5px;">
 
                             <div class="selisih-toggle">
 
@@ -656,6 +669,7 @@
             </div>
 
 
+            <!-- RINGKASAN -->
             <div class="card">
 
                 <div class="card-header">
@@ -727,6 +741,7 @@
 
         <div class="so-bottom-row">
 
+            <!-- PROGRESS -->
             <div class="card">
 
                 <div class="card-header">
@@ -735,21 +750,17 @@
                 </div>
 
                 <div class="progress-bar">
+
                     <div
                         class="progress-fill"
                         id="progressSORak"
                         style="width:0%;"
                     ></div>
+
                 </div>
 
                 <div
-                    style="
-                        font-size:11px;
-                        text-align:center;
-                        font-weight:bold;
-                        margin-bottom:12px;
-                        color:#007bff;
-                    "
+                    style="font-size:11px;text-align:center;font-weight:bold;margin-bottom:12px;"
                     id="textProgressSO"
                 >
                     0 dari 0 Rak Terselesaikan (0%)
@@ -762,7 +773,6 @@
                         class="form-control"
                         onchange="renderStatusRak()"
                     >
-
                         <option value="semua">
                             Tampilkan Semua Rak
                         </option>
@@ -781,23 +791,18 @@
 
                 <div
                     id="listStatusRak"
-                    style="
-                        max-height:250px;
-                        overflow-y:auto;
-                        border:1px solid var(--border-color);
-                        border-radius:6px;
-                        padding:5px;
-                    "
+                    style="max-height:250px;overflow-y:auto;border:1px solid var(--border-color);border-radius:6px;padding:5px;"
                 ></div>
 
             </div>
 
 
+            <!-- DATA -->
             <div class="card">
 
                 <div class="card-header">
                     <i class="fas fa-table"></i>
-                    Data Tersimpan di Server
+                    Data Tersimpan di Supabase
                 </div>
 
                 <div class="filter-container">
@@ -822,7 +827,6 @@
                         class="form-control"
                         onchange="renderSO()"
                     >
-
                         <option value="semua">
                             Tampil Semua
                         </option>
@@ -881,1687 +885,1680 @@
 
 <script>
 
-    /* =========================================================
-       1. KONFIGURASI SUPABASE
-       ========================================================= */
+/* =========================================================
+   1. KONFIGURASI SUPABASE
+========================================================= */
 
-    const SUPABASE_URL =
-        "https://cnicfxkffpmfvphlgqmi.supabase.co";
+const SUPABASE_URL =
+    "https://cnicfxkffpmfvphlgqmi.supabase.co";
 
-    const SUPABASE_API_URL =
-        "https://cnicfxkffpmfvphlgqmi.supabase.co/rest/v1/";
+const SUPABASE_API =
+    SUPABASE_URL + "/rest/v1";
 
-    const SUPABASE_KEY =
-        "sb_publishable_MUoal40LpsRgVH8rvmrYNA_xXlsW1-r";
-
-    const SUPABASE_TABLE = "so_data";
+const SUPABASE_KEY =
+    "sb_publishable_MUoal40LpsRgVH8rvmrYNA_xXlsW1-r";
 
 
-    /* =========================================================
-       HEADER UNTUK SUPABASE DATA API
-       ========================================================= */
+/* =========================================================
+   2. HEADER SUPABASE
+========================================================= */
 
-    function supabaseHeaders(extra = {}) {
+function supabaseHeaders(extra = {}) {
 
-        return {
-            "apikey": SUPABASE_KEY,
-            "Authorization": "Bearer " + SUPABASE_KEY,
-            "Content-Type": "application/json",
-            ...extra
-        };
+    return {
+        "apikey": SUPABASE_KEY,
+        "Authorization": "Bearer " + SUPABASE_KEY,
+        "Content-Type": "application/json",
+        ...extra
+    };
 
-    }
-
-
-    /* =========================================================
-       VARIABEL DATA
-       ========================================================= */
-
-    let kodeTokoAktif =
-        localStorage.getItem("mpkt_kode_toko");
-
-    let dataSO = [];
-
-    let pollingAktif = null;
-
-    let sedangMemuatData = false;
+}
 
 
-    /* =========================================================
-       STATUS KONEKSI
-       ========================================================= */
+/* =========================================================
+   3. DATA LOKAL
+========================================================= */
 
-    function setStatusOnline(teks, warna, textColor = "#fff") {
+let kodeTokoAktif =
+    localStorage.getItem("mpkt_kode_toko");
 
-        const status =
-            document.getElementById("onlineStatus");
+let dataSO = [];
 
-        status.innerText = teks;
-        status.style.backgroundColor = warna;
-        status.style.color = textColor;
+let sedangMemuat = false;
 
-    }
+let intervalRefresh = null;
 
 
-    /* =========================================================
-       2. SISTEM KODE TOKO
-       ========================================================= */
+/* =========================================================
+   4. STATUS ONLINE
+========================================================= */
 
-    function validasiKodeToko(input) {
+function setStatusOnline(text, warna, textColor = "#fff") {
 
-        const formattedInput =
-            input.trim().toUpperCase();
+    const status =
+        document.getElementById("onlineStatus");
 
-        const regex =
-            /^(?=.*[A-Z])(?=.*\d)[A-Z0-9]{4}$/;
+    status.innerText = text;
 
-        return regex.test(formattedInput);
+    status.style.backgroundColor = warna;
 
-    }
+    status.style.color = textColor;
 
-
-    function cekKodeToko() {
-
-        if (!kodeTokoAktif) {
-
-            let input = prompt(
-                "Masukkan KODE TOKO Anda\n\nContoh: AB12 atau I004"
-            );
-
-            if (input) {
-
-                let formattedInput =
-                    input.trim().toUpperCase();
-
-                if (validasiKodeToko(formattedInput)) {
-
-                    kodeTokoAktif =
-                        formattedInput;
-
-                    localStorage.setItem(
-                        "mpkt_kode_toko",
-                        kodeTokoAktif
-                    );
-
-                } else {
-
-                    alert(
-                        "Format Kode Toko Salah!\n\n" +
-                        "Ketentuan:\n" +
-                        "- Harus tepat 4 karakter\n" +
-                        "- Harus ada gabungan Huruf dan Angka\n" +
-                        "- Huruf otomatis menjadi Kapital\n\n" +
-                        "Contoh: AB12 atau I004"
-                    );
-
-                    cekKodeToko();
-                    return;
-                }
-
-            } else {
-
-                alert(
-                    "Kode Toko wajib diisi untuk menggunakan aplikasi!"
-                );
-
-                cekKodeToko();
-                return;
-            }
-        }
+}
 
 
-        document.getElementById("storeName").innerText =
-            "KODE TOKO: " + kodeTokoAktif;
+/* =========================================================
+   5. CEK KONEKSI SUPABASE
+========================================================= */
 
+async function cekKoneksiSupabase() {
 
-        mulaiMendengarkanDatabase();
+    try {
 
-    }
-
-
-    function gantiKodeToko() {
-
-        let input = prompt(
-            "Ganti Kode Toko\n\n" +
-            "4 Karakter, Gabungan Huruf & Angka\n" +
-            "Contoh: AB12 atau I004",
-            kodeTokoAktif
+        setStatusOnline(
+            "Menghubungkan...",
+            "#f1c40f",
+            "#333"
         );
 
+        const response = await fetch(
+            SUPABASE_API +
+            "/so_data?select=id&limit=1",
+            {
+                method: "GET",
+                headers: supabaseHeaders()
+            }
+        );
+
+        if (!response.ok) {
+
+            const errorText =
+                await response.text();
+
+            throw new Error(
+                response.status +
+                " - " +
+                errorText
+            );
+
+        }
+
+        setStatusOnline(
+            "Supabase Terhubung",
+            "#2ecc71"
+        );
+
+        return true;
+
+    } catch (error) {
+
+        console.error(
+            "Koneksi Supabase gagal:",
+            error
+        );
+
+        setStatusOnline(
+            "Gagal Terhubung",
+            "#e74c3c"
+        );
+
+        return false;
+
+    }
+
+}
+
+
+/* =========================================================
+   6. KODE TOKO
+========================================================= */
+
+function validasiKodeToko(input) {
+
+    const formatted =
+        input.trim().toUpperCase();
+
+    const regex =
+        /^(?=.*[A-Z])(?=.*\d)[A-Z0-9]{4}$/;
+
+    return regex.test(formatted);
+
+}
+
+
+function cekKodeToko() {
+
+    if (!kodeTokoAktif) {
+
+        const input = prompt(
+            "Masukkan KODE TOKO Anda\n\n" +
+            "Contoh: AB12 atau I004\n\n" +
+            "Harus 4 karakter dan terdiri dari huruf + angka:"
+        );
 
         if (input) {
 
-            let formattedInput =
+            const formatted =
                 input.trim().toUpperCase();
 
+            if (validasiKodeToko(formatted)) {
 
-            if (validasiKodeToko(formattedInput)) {
-
-                kodeTokoAktif =
-                    formattedInput;
+                kodeTokoAktif = formatted;
 
                 localStorage.setItem(
                     "mpkt_kode_toko",
                     kodeTokoAktif
                 );
 
-                document.getElementById("storeName").innerText =
-                    "KODE TOKO: " + kodeTokoAktif;
-
-
-                dataSO = [];
-
-                renderSO();
-
-                mulaiMendengarkanDatabase();
-
-
             } else {
 
                 alert(
                     "Format Kode Toko Salah!\n\n" +
                     "Ketentuan:\n" +
-                    "- Harus tepat 4 karakter\n" +
-                    "- Harus ada gabungan Huruf dan Angka\n\n" +
+                    "- Tepat 4 karakter\n" +
+                    "- Harus ada huruf\n" +
+                    "- Harus ada angka\n\n" +
                     "Contoh: AB12 atau I004"
                 );
 
-                gantiKodeToko();
+                cekKodeToko();
 
+                return;
             }
 
+        } else {
+
+            alert(
+                "Kode Toko wajib diisi!"
+            );
+
+            cekKodeToko();
+
+            return;
         }
 
     }
 
+    document.getElementById(
+        "storeName"
+    ).innerText =
+        "KODE TOKO: " +
+        kodeTokoAktif;
 
-    /* =========================================================
-       3. AMBIL DATA DARI SUPABASE
-       ========================================================= */
+    mulaiMendengarkanDatabase();
 
-    async function ambilDataSO() {
-
-        if (!kodeTokoAktif) return;
-
-        if (sedangMemuatData) return;
-
-        sedangMemuatData = true;
+}
 
 
-        try {
+function gantiKodeToko() {
 
-            setStatusOnline(
-                "Mengambil data...",
-                "#f39c12",
-                "#333"
+    const input = prompt(
+        "Ganti Kode Toko\n\n" +
+        "Contoh: AB12 atau I004",
+        kodeTokoAktif || ""
+    );
+
+    if (!input) return;
+
+    const formatted =
+        input.trim().toUpperCase();
+
+    if (!validasiKodeToko(formatted)) {
+
+        alert(
+            "Format Kode Toko Salah!\n\n" +
+            "Harus tepat 4 karakter dan harus ada huruf + angka."
+        );
+
+        return;
+    }
+
+    kodeTokoAktif = formatted;
+
+    localStorage.setItem(
+        "mpkt_kode_toko",
+        kodeTokoAktif
+    );
+
+    document.getElementById(
+        "storeName"
+    ).innerText =
+        "KODE TOKO: " +
+        kodeTokoAktif;
+
+    mulaiMendengarkanDatabase();
+
+}
+
+
+/* =========================================================
+   7. TARIK DATA DARI SUPABASE
+========================================================= */
+
+async function mulaiMendengarkanDatabase() {
+
+    if (!kodeTokoAktif) return;
+
+    await ambilDataSO();
+
+    if (!intervalRefresh) {
+
+        intervalRefresh =
+            setInterval(
+                ambilDataSO,
+                5000
             );
 
+    }
 
-            const url =
-                SUPABASE_API_URL +
-                SUPABASE_TABLE +
-                "?select=*" +
-                "&kode_toko=eq." +
-                encodeURIComponent(kodeTokoAktif) +
-                "&order=waktu_update.desc";
+}
 
 
-            const response =
+async function ambilDataSO() {
+
+    if (!kodeTokoAktif) return;
+
+    if (sedangMemuat) return;
+
+    sedangMemuat = true;
+
+    try {
+
+        const url =
+            SUPABASE_API +
+            "/so_data" +
+            "?select=*" +
+            "&kode_toko=eq." +
+            encodeURIComponent(kodeTokoAktif) +
+            "&order=waktu_update.desc";
+
+        const response =
+            await fetch(
+                url,
+                {
+                    method: "GET",
+                    headers: supabaseHeaders()
+                }
+            );
+
+        if (!response.ok) {
+
+            const errorText =
+                await response.text();
+
+            throw new Error(
+                response.status +
+                " - " +
+                errorText
+            );
+
+        }
+
+        const hasil =
+            await response.json();
+
+        dataSO = Array.isArray(hasil)
+            ? hasil
+            : [];
+
+        setStatusOnline(
+            "Online & Tersinkronisasi",
+            "#2ecc71"
+        );
+
+        renderSO();
+
+    } catch (error) {
+
+        console.error(
+            "Gagal mengambil data:",
+            error
+        );
+
+        setStatusOnline(
+            "Koneksi Bermasalah",
+            "#e74c3c"
+        );
+
+    } finally {
+
+        sedangMemuat = false;
+
+    }
+
+}
+
+
+/* =========================================================
+   8. SIMPAN DATA
+========================================================= */
+
+async function simpanSO() {
+
+    const idEdit =
+        document.getElementById(
+            "soEditId"
+        ).value;
+
+    const rak =
+        document.getElementById(
+            "soRakInput"
+        ).value.trim();
+
+    const pic =
+        document.getElementById(
+            "soPetugasInput"
+        ).value.trim();
+
+    const tgl =
+        document.getElementById(
+            "soTanggalInput"
+        ).value;
+
+    const ket =
+        document.getElementById(
+            "soKeteranganInput"
+        ).value.trim();
+
+    const jenisSelisih =
+        document.getElementById(
+            "soJenisSelisih"
+        ).value;
+
+    const nominalInput =
+        parseInt(
+            document.getElementById(
+                "soNominalInput"
+            ).value
+        ) || 0;
+
+
+    if (!rak || !pic || !tgl) {
+
+        alert(
+            "Harap isi Rak, PIC, dan Tanggal!"
+        );
+
+        return;
+    }
+
+
+    let finalNominal = 0;
+
+    if (nominalInput > 0) {
+
+        finalNominal =
+            jenisSelisih === "-"
+                ? -Math.abs(nominalInput)
+                : Math.abs(nominalInput);
+
+    }
+
+
+    const dataSimpan = {
+
+        kode_toko:
+            kodeTokoAktif,
+
+        rak:
+            rak.toUpperCase(),
+
+        pic:
+            pic.toUpperCase(),
+
+        val:
+            finalNominal,
+
+        tgl:
+            tgl,
+
+        ket:
+            ket,
+
+        waktu_update:
+            Date.now()
+
+    };
+
+
+    const tombol =
+        document.getElementById(
+            "btnSimpanSO"
+        );
+
+    tombol.disabled = true;
+
+    tombol.innerHTML =
+        '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+
+
+    try {
+
+        let response;
+
+
+        /* UPDATE */
+
+        if (idEdit) {
+
+            response =
                 await fetch(
-                    url,
+                    SUPABASE_API +
+                    "/so_data?id=eq." +
+                    encodeURIComponent(idEdit),
                     {
-                        method: "GET",
-                        headers: supabaseHeaders()
+                        method: "PATCH",
+                        headers: supabaseHeaders({
+                            "Prefer":
+                                "return=representation"
+                        }),
+                        body:
+                            JSON.stringify(
+                                dataSimpan
+                            )
                     }
                 );
 
 
-            if (!response.ok) {
+        }
 
-                const errorText =
-                    await response.text();
+        /* INSERT */
 
-                throw new Error(
-                    "HTTP " +
-                    response.status +
-                    " - " +
-                    errorText
+        else {
+
+            response =
+                await fetch(
+                    SUPABASE_API +
+                    "/so_data",
+                    {
+                        method: "POST",
+                        headers: supabaseHeaders({
+                            "Prefer":
+                                "return=representation"
+                        }),
+                        body:
+                            JSON.stringify(
+                                dataSimpan
+                            )
+                    }
                 );
 
-            }
+        }
 
 
-            const hasil =
-                await response.json();
+        if (!response.ok) {
 
+            const errorText =
+                await response.text();
 
-            dataSO =
-                Array.isArray(hasil)
-                    ? hasil
-                    : [];
-
-
-            setStatusOnline(
-                "Online & Tersinkronisasi",
-                "#2ecc71"
+            throw new Error(
+                response.status +
+                " - " +
+                errorText
             );
-
-
-            renderSO();
-
-
-        } catch (error) {
-
-            console.error(
-                "Supabase Error:",
-                error
-            );
-
-
-            setStatusOnline(
-                "Gagal terhubung",
-                "#dc3545"
-            );
-
-
-            console.error(
-                "Detail:",
-                error.message
-            );
-
-        } finally {
-
-            sedangMemuatData = false;
 
         }
+
+
+        alert(
+            idEdit
+                ? "Data berhasil diperbarui."
+                : "Data berhasil disimpan ke Supabase."
+        );
+
+
+        resetFormSO();
+
+        await ambilDataSO();
+
+
+    } catch (error) {
+
+        console.error(
+            "Gagal menyimpan:",
+            error
+        );
+
+        alert(
+            "Gagal menyimpan data!\n\n" +
+            error.message
+        );
+
+    } finally {
+
+        tombol.disabled = false;
+
+        tombol.innerHTML =
+            '<i class="fas fa-cloud-upload-alt"></i> Simpan Online';
+
+    }
+
+}
+
+
+/* =========================================================
+   9. HAPUS DATA
+========================================================= */
+
+async function hapusSO(id) {
+
+    if (!confirm(
+        "Hapus data SO ini dari server?"
+    )) {
+
+        return;
 
     }
 
 
-    /* =========================================================
-       4. SISTEM PEMBARUAN DATA OTOMATIS
-       ========================================================= */
+    try {
 
-    function mulaiMendengarkanDatabase() {
+        const response =
+            await fetch(
+                SUPABASE_API +
+                "/so_data?id=eq." +
+                encodeURIComponent(id) +
+                "&kode_toko=eq." +
+                encodeURIComponent(
+                    kodeTokoAktif
+                ),
+                {
+                    method: "DELETE",
+                    headers: supabaseHeaders()
+                }
+            );
 
-        if (pollingAktif) {
 
-            clearInterval(pollingAktif);
+        if (!response.ok) {
+
+            const errorText =
+                await response.text();
+
+            throw new Error(
+                response.status +
+                " - " +
+                errorText
+            );
 
         }
 
 
-        ambilDataSO();
+        await ambilDataSO();
 
 
-        /*
-         * Supabase Data API REST tidak memakai listener Firebase.
-         * Jadi website mengecek perubahan server otomatis setiap 3 detik.
-         */
+    } catch (error) {
 
-        pollingAktif =
-            setInterval(
-                () => {
+        console.error(
+            "Gagal hapus:",
+            error
+        );
 
-                    ambilDataSO();
-
-                },
-                3000
-            );
+        alert(
+            "Gagal menghapus data!\n\n" +
+            error.message
+        );
 
     }
 
-
-    /* =========================================================
-       5. SIMPAN DATA KE SUPABASE
-       ========================================================= */
-
-    async function simpanSO() {
-
-        let idEdit =
-            document.getElementById("soEditId").value;
-
-        let rak =
-            document.getElementById("soRakInput").value.trim();
-
-        let pic =
-            document.getElementById("soPetugasInput").value.trim();
-
-        let tgl =
-            document.getElementById("soTanggalInput").value;
-
-        let ket =
-            document.getElementById("soKeteranganInput").value.trim();
-
-        let jenisSelisih =
-            document.getElementById("soJenisSelisih").value;
-
-        let nominalInput =
-            parseInt(
-                document.getElementById("soNominalInput").value
-            ) || 0;
+}
 
 
-        if (!rak || !pic || !tgl) {
+/* =========================================================
+   10. MASTER RAK
+========================================================= */
 
-            alert(
-                "Harap isi Rak, PIC, dan Tanggal!"
-            );
+const masterDataRak = [
+    "AT1 - REG BEVERAGES 1",
+    "AU1 - CHILLER 1",
+    "AU2 - CHILLER 2",
+    "AU3 - CHILLER 3",
+    "AU4 - CHILLER 4",
+    "AU5 - CHILLER 5",
+    "AU6 - CHILLER 6",
+    "AU7 - CHILLER 7",
+    "AU8 - CHILLER 8",
+    "AZ1 - FDU GALON 5 LITER",
+    "BC1 - BREAKFAST PN",
+    "BC2 - BREAKFAST PN",
+    "CB1 - SN ACR ROYCO",
+    "CF1 - SN WIRE RACK",
+    "CH1 - ACR/TRAY STAPLLE 1",
+    "CT1 - STAPLENEED PN",
+    "CT2 - STAPLENEED PN",
+    "CT3 - STAPLENEED PN",
+    "CT4 - STAPLENEED PN",
+    "CW1 - NOODLE PN",
+    "CW2 - NOODLE PN",
+    "CW3 - NOODLE PN",
+    "DB1 - BISC+CONFECT-CONF 3 SSN",
+    "DD1 - BISC+CONFECT-CSP PEZ CANDY",
+    "DE1 - BISC+CONFECT 1",
+    "DE2 - BISC+CONFECT 1",
+    "DE3 - BISC+CONFECT 3",
+    "DE4 - BISC+CONFECT 4",
+    "DE5 - BISC+CONFECT 5",
+    "DE6 - BISC+CONFECT 6",
+    "EB1 - SNACK-HEALTHY",
+    "EC1 - SNACK-WS A BRAND",
+    "ED1 - SNACK-WS SAMBOY 1",
+    "EE1 - SNACK-SIDE WS SAMBOY",
+    "EF1 - SNACK-CSP KIMBO",
+    "EI1 - SNACK 1",
+    "E12 - SNACK 2",
+    "E13 - SNACK 3",
+    "E14 - SNACK 4",
+    "E15 - SNACK 5",
+    "E16 - SNACK 6",
+    "EJ1 - PRINGLES DBL",
+    "FE1 - MILK & DIAPERS PN 1",
+    "FE2 - MILK & DIAPERS PN 2",
+    "FE3 - MILK & DIAPERS PN 3",
+    "FE4 - MILK & DIAPERS PN 4",
+    "FE5 - MILK & DIAPERS PN 5",
+    "FE6 - MILK & DIAPERS PN 6",
+    "FE7 - MILK & DIAPERS PN 7",
+    "FE8 - MILK & DIAPERS PN 8",
+    "GA1 - BW KIRI",
+    "GB1 - BW TENGAH",
+    "GB2 - BW KANAN",
+    "GD1 - TP ELEKTRIK",
+    "HB1 - MEJA COC ACC 1",
+    "HB2 - MEJA COC ACC 2",
+    "HB3 - MEJA COC ACC 3",
+    "HB4 - MEJA COC ACC 4",
+    "HB5- MEJA COC ACC 5",
+    "HB6 - MEJA COC ACC 6",
+    "HB7 - MEJA COC ACC 7",
+    "HC1 - COC-ACR SILVERQUEEN",
+    "HD1 - COC-ACR CADBURY",
+    "HE1 - COC-ACR BATERAI HOOK",
+    "HF1 - COC-ACR BATERAI SUDUT",
+    "HG1 - COC-ACR KONDOM",
+    "HH1 - COC-ACR STREPSILS",
+    "HI1 - COC-ACR FISHERMAN'S",
+    "HL1 - COC-MINI COC",
+    "HM1 - COC-ACR CHUPA MEJA OLD",
+    "HN1 - COC-ACR CHUPA MEJA ACC",
+    "H01 - COC-AREA MATERAI",
+    "HS1 - RAK TRAY NDS",
+    "HT1 - SOUR BELT 1M",
+    "JA1 - TOYS",
+    "JC1 - TOYS-STD ROTATING",
+    "KI1 - PC HB-ACR INSERT 1",
+    "KJ1 - PC HB-ACR HC 1",
+    "KL1 - ACR SHEET MASK 1 HB",
+    "K01 - PC HB-ACR DECOR 1",
+    "KP1 - PC HB-STD PINKBR 1",
+    "KS1 - PLU K ACR HAIR COLOR 3/KS1",
+    "MC1 - MEDICINE-BABY-ACR 1",
+    "MD1 - MEDICINE-BABY-ACR 2",
+    "ME1 - MEDICINE-BABY-ACR 3",
+    "MI1 - MEDICINE & BABY CARE PN1",
+    "M12 - MEDICINE & BABY CARE PN2",
+    "NA1 - FREEZER ICE WALLS 1",
+    "NG1 - FREEZER ICW SHR GLICO-AICE 1",
+    "NP1 - FREEZER NUG BENFARM 1",
+    "OA1 - BREAD CORNER 1",
+    "OA2 - BREAD CORNER 2",
+    "OC1 - TRAY KEJU",
+    "PA1 - RAK DISPLAY RTD SIAP SEDUH",
+    "PA2 - RAK TAMPUNG RTD SIAP SEDUH",
+    "PB1 - RAK DISPLAY ACR NOODLE CUP 1",
+    "PB2 - RAK DISPLAY ACR NOODLE CUP 2",
+    "PB3 - RAK TAMPUNG ACR NOODLE CUP",
+    "Q31 - SANDULT 1R",
+    "Q32 - SANDULT 2R",
+    "Q41 - MISCSTA 1R",
+    "Q42 - MISCSTA 2R",
+    "Q51 - HH 1R",
+    "Q52 - HH 2R",
+    "Q53 - HH 3R NP",
+    "Q54 - HH 4R NP",
+    "Q55 - HH 5R NP",
+    "Q56 - HH 6R",
+    "Q61 - RAK ONEPRICE (1)",
+    "QA1 - RAK TISSUE 1R",
+    "QF1 - ACR MISC",
+    "QG1 - WS MASKER (EX MOTORIS)",
+    "QH1 - WS/GD KARAKTER",
+    "QI1 - WDU CSP STICKER",
+    "QJ1 - WS AKSESORIS",
+    "QK1 - WS AIR FRESHNER",
+    "QL1 - WS UNDERWEAR",
+    "QM1 - SIDE WS AKSESORIS",
+    "Q01 - AREA AMPLOP FESTIVE",
+    "QP1 - FDU SRK KERTAS KADO",
+    "QR1 - WS CORONA",
+    "QS1 - ACR STATIONARY BERTINGKAT",
+    "QU1 - ACR KAMPER",
+    "QX1 - STD MASKER B21",
+    "QY1 - ACR PET FOOD NEW",
+    "S11 - PERSONAL & TOOTH CARE 1",
+    "S12 - PERSONAL & TOOTH CARE 2",
+    "S13 - PERSONAL & TOOTH CARE",
+    "S14 - PERSONAL & TOOTH CARE 4",
+    "S15 - PERSONAL & TOOTH CARE 5",
+    "S16 - PERSONAL & TOOTH CARE 6",
+    "S17 - PERSONAL & TOOTH CARE 7",
+    "S18 - PERSONAL & TOOTH CARE 8",
+    "Z31 - AMBALAN SIP",
+    "Z51 - RAK SO IC/AC/AM",
+    "ZAO - MACHINE ICE SLUSH",
+    "ZA1 - MACHINE LIPTON",
+    "ZA2 - MACHINE DELONGHI",
+    "ZA4 - MACHINE FRANKE",
+    "ZA5 - MACHINE HOTSIGN",
+    "ZA6 - ACR POJOK SEDUH",
+    "ZA7 - MACHINE MILO",
+    "ZA8 - MACHINE NESTLE KALINA",
+    "ZA9 - MACHINE POTUM",
+    "ZAA - MACHINE VENUSTA",
+    "ZABRAK RAW-RPC-CONDIMENT",
+    "ZAC - FREEZER ICE CUBE",
+    "ZAD - FREEZER BOILED",
+    "ZAE - OPEN FREZER A-YELLOW",
+    "ZAF - FREZER ES PUTER HOMI",
+    "ZAG - BEANSPOT - RTD COFFE",
+    "ZAI - BEANSPOT - SHOWCASE BKRY FPG 1",
+    "ZAJ - BEANSPOT - SHOWCASE BKRY FPG 2",
+    "ZAK - BEANSPOT JOLLY TIME",
+    "ZAL - BEANSPOT BASIC - ACR RTD",
+    "ZAM - BEANSPOT BASIC - ACR SACHET",
+    "ZAN - ACR NOD CUP BSC",
+    "ZB1 - Z-E VOUCHER 1",
+    "ZB2 - Z-E VOUCHER 2",
+    "ZC1 - Z-PLU K & SURAT TUGAS 1",
+    "ZC2 - Z-PLU K & SURAT TUGAS 2",
+    "ZC3 - Z-PLU K & SURAT TUGAS 3",
+    "ZC4 - Z-PLU K & SURAT TUGAS 4",
+    "ZC5 - Z-PLU K & SURAT TUGAS 5",
+    "ZD1 - Z-EMBALASI 1",
+    "ZG1 - Z-RAK ADD DIAPERS 1",
+    "ZI1 - Z-PROMOTION GOODS&BM 1",
+    "ZK1 - Z-GD ONESHOOT 1",
+    "ZL1 - Z-GD LOKALPOLITIS 1",
+    "ZM1 - RACK ON FREEZER",
+    "ZN1 - GB TAG NH FOOD",
+    "ZN2 - GB TAG NH NFOOD",
+    "ZQ1 - Z-GDF AIR MINERAL 1.5",
+    "ZQ1Z - GDF AIR MINERAL 1.5",
+    "ZR1 - Z-FDU DISPLAY GALON",
+    "ZS1 - Z-FDU AIR CUP KARTON",
+    "ZS1 - ZFDU AIR CUP KARTON",
+    "ZU1 - FDU FOCUS TELUR",
+    "ZV1 - Z-FDU CORONA",
+    "ZW1 - FLOOR BAZAAR"
+];
 
-            return;
+const uniqueMasterRak =
+    [...new Set(masterDataRak)];
 
+
+/* =========================================================
+   11. FORMAT
+========================================================= */
+
+function formatRupiah(angka) {
+
+    return new Intl.NumberFormat(
+        "id-ID",
+        {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0
         }
+    ).format(angka);
+
+}
 
 
-        if (!kodeTokoAktif) {
+function formatTanggal(dateStr) {
 
-            alert(
-                "Kode toko belum tersedia!"
-            );
+    if (!dateStr) return "";
 
-            return;
+    const d =
+        new Date(dateStr + "T00:00:00");
 
+    return d.toLocaleDateString(
+        "id-ID",
+        {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
         }
+    );
+
+}
 
 
-        let finalNominal = 0;
+/* =========================================================
+   12. DROPDOWN RAK
+========================================================= */
+
+function renderCustomRakList(
+    filterText = ""
+) {
+
+    const listContainer =
+        document.getElementById(
+            "customRakList"
+        );
+
+    listContainer.innerHTML = "";
+
+    const filtered =
+        uniqueMasterRak.filter(
+            rak =>
+                rak
+                .toLowerCase()
+                .includes(
+                    filterText.toLowerCase()
+                )
+        );
 
 
-        if (nominalInput > 0) {
+    if (filtered.length === 0) {
 
-            finalNominal =
-                jenisSelisih === "-"
-                    ? -Math.abs(nominalInput)
-                    : Math.abs(nominalInput);
+        listContainer.innerHTML =
+            '<div class="custom-dropdown-item">' +
+            'Rak tidak ditemukan' +
+            '</div>';
 
-        }
+        return;
+    }
 
 
-        const dataSimpan = {
+    filtered.forEach(rak => {
 
-            kode_toko:
-                kodeTokoAktif,
+        const item =
+            document.createElement("div");
 
-            rak:
-                rak.toUpperCase(),
+        item.className =
+            "custom-dropdown-item";
 
-            pic:
-                pic.toUpperCase(),
+        item.innerText = rak;
 
-            val:
-                finalNominal,
+        item.onclick = function() {
 
-            tgl:
-                tgl,
+            document.getElementById(
+                "soRakInput"
+            ).value = rak;
 
-            ket:
-                ket,
-
-            waktu_update:
-                Date.now()
+            listContainer.style.display =
+                "none";
 
         };
 
+        listContainer.appendChild(item);
 
-        const tombol =
-            document.getElementById("btnSimpanSO");
+    });
 
-
-        tombol.innerHTML =
-            '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
-
-        tombol.disabled = true;
+}
 
 
-        try {
+function bukaDropdownRak() {
 
-            let response;
+    renderCustomRakList(
+        document.getElementById(
+            "soRakInput"
+        ).value
+    );
 
+    document.getElementById(
+        "customRakList"
+    ).style.display = "block";
 
-            /* =================================================
-               UPDATE DATA
-               ================================================= */
-
-            if (idEdit) {
-
-                const url =
-                    SUPABASE_API_URL +
-                    SUPABASE_TABLE +
-                    "?id=eq." +
-                    encodeURIComponent(idEdit) +
-                    "&kode_toko=eq." +
-                    encodeURIComponent(kodeTokoAktif);
+}
 
 
-                response =
-                    await fetch(
-                        url,
-                        {
-                            method: "PATCH",
-                            headers: supabaseHeaders({
-                                "Prefer":
-                                    "return=minimal"
-                            }),
-                            body:
-                                JSON.stringify(dataSimpan)
-                        }
-                    );
+function filterCustomRak() {
+
+    renderCustomRakList(
+        document.getElementById(
+            "soRakInput"
+        ).value
+    );
+
+    document.getElementById(
+        "customRakList"
+    ).style.display = "block";
+
+}
 
 
-            }
-
-            /* =================================================
-               INSERT DATA BARU
-               ================================================= */
-
-            else {
-
-                const url =
-                    SUPABASE_API_URL +
-                    SUPABASE_TABLE;
-
-
-                response =
-                    await fetch(
-                        url,
-                        {
-                            method: "POST",
-                            headers: supabaseHeaders({
-                                "Prefer":
-                                    "return=minimal"
-                            }),
-                            body:
-                                JSON.stringify(dataSimpan)
-                        }
-                    );
-
-            }
-
-
-            if (!response.ok) {
-
-                const errorText =
-                    await response.text();
-
-                throw new Error(
-                    "HTTP " +
-                    response.status +
-                    " - " +
-                    errorText
-                );
-
-            }
-
-
-            resetFormSO();
-
-
-            await ambilDataSO();
-
-
-            setStatusOnline(
-                "Berhasil tersimpan",
-                "#2ecc71"
-            );
-
-
-            setTimeout(
-                () => {
-
-                    setStatusOnline(
-                        "Online & Tersinkronisasi",
-                        "#2ecc71"
-                    );
-
-                },
-                1500
-            );
-
-
-        } catch (error) {
-
-            console.error(
-                "Gagal simpan:",
-                error
-            );
-
-
-            alert(
-                "Gagal menyimpan data ke server.\n\n" +
-                error.message
-            );
-
-
-            setStatusOnline(
-                "Gagal menyimpan",
-                "#dc3545"
-            );
-
-        } finally {
-
-            tombol.disabled = false;
-
-            tombol.innerHTML =
-                '<i class="fas fa-cloud-upload-alt"></i> Simpan Online';
-
-        }
-
-    }
-
-
-    /* =========================================================
-       6. HAPUS DATA
-       ========================================================= */
-
-    async function hapusSO(id) {
-
-        if (!id) return;
-
+document.addEventListener(
+    "click",
+    function(e) {
 
         if (
-            !confirm(
-                "Hapus data SO ini dari server?\n\n" +
-                "Data yang dihapus tidak dapat dikembalikan."
+            !e.target.closest(
+                ".custom-dropdown-container"
             )
         ) {
 
-            return;
-
-        }
-
-
-        try {
-
-            setStatusOnline(
-                "Menghapus...",
-                "#f39c12",
-                "#333"
-            );
-
-
-            const url =
-                SUPABASE_API_URL +
-                SUPABASE_TABLE +
-                "?id=eq." +
-                encodeURIComponent(id) +
-                "&kode_toko=eq." +
-                encodeURIComponent(kodeTokoAktif);
-
-
-            const response =
-                await fetch(
-                    url,
-                    {
-                        method: "DELETE",
-                        headers: supabaseHeaders({
-                            "Prefer":
-                                "return=minimal"
-                        })
-                    }
+            const list =
+                document.getElementById(
+                    "customRakList"
                 );
 
+            if (list) {
 
-            if (!response.ok) {
-
-                const errorText =
-                    await response.text();
-
-                throw new Error(
-                    "HTTP " +
-                    response.status +
-                    " - " +
-                    errorText
-                );
+                list.style.display =
+                    "none";
 
             }
-
-
-            await ambilDataSO();
-
-
-            setStatusOnline(
-                "Online & Tersinkronisasi",
-                "#2ecc71"
-            );
-
-
-        } catch (error) {
-
-            console.error(
-                "Gagal hapus:",
-                error
-            );
-
-
-            alert(
-                "Gagal menghapus data.\n\n" +
-                error.message
-            );
-
-
-            setStatusOnline(
-                "Gagal menghapus",
-                "#dc3545"
-            );
 
         }
 
     }
+);
 
 
-    /* =========================================================
-       DATA MASTER RAK
-       ========================================================= */
+/* =========================================================
+   13. PLUS / MINUS
+========================================================= */
 
-    const masterDataRak = [
-        "AT1 - REG BEVERAGES 1",
-        "AU1 - CHILLER 1",
-        "AU2 - CHILLER 2",
-        "AU3 - CHILLER 3",
-        "AU4 - CHILLER 4",
-        "AU5 - CHILLER 5",
-        "AU6 - CHILLER 6",
-        "AU7 - CHILLER 7",
-        "AU8 - CHILLER 8",
-        "AZ1 - FDU GALON 5 LITER",
-        "BC1 - BREAKFAST PN",
-        "BC2 - BREAKFAST PN",
-        "CB1 - SN ACR ROYCO",
-        "CF1 - SN WIRE RACK",
-        "CH1 - ACR/TRAY STAPLLE 1",
-        "CT1 - STAPLENEED PN",
-        "CT2 - STAPLENEED PN",
-        "CT3 - STAPLENEED PN",
-        "CT4 - STAPLENEED PN",
-        "CW1 - NOODLE PN",
-        "CW2 - NOODLE PN",
-        "CW3 - NOODLE PN",
-        "DB1 - BISC+CONFECT-CONF 3 SSN",
-        "DD1 - BISC+CONFECT-CSP PEZ CANDY",
-        "DE1 - BISC+CONFECT 1",
-        "DE2 - BISC+CONFECT 1",
-        "DE3 - BISC+CONFECT 3",
-        "DE4 - BISC+CONFECT 4",
-        "DE5 - BISC+CONFECT 5",
-        "DE6 - BISC+CONFECT 6",
-        "EB1 - SNACK-HEALTHY",
-        "EC1 - SNACK-WS A BRAND",
-        "ED1 - SNACK-WS SAMBOY 1",
-        "EE1 - SNACK-SIDE WS SAMBOY",
-        "EF1 - SNACK-CSP KIMBO",
-        "EI1 - SNACK 1",
-        "E12 - SNACK 2",
-        "E13 - SNACK 3",
-        "E14 - SNACK 4",
-        "E15 - SNACK 5",
-        "E16 - SNACK 6",
-        "EJ1 - PRINGLES DBL",
-        "FE1 - MILK & DIAPERS PN 1",
-        "FE2 - MILK & DIAPERS PN 2",
-        "FE3 - MILK & DIAPERS PN 3",
-        "FE4 - MILK & DIAPERS PN 4",
-        "FE5 - MILK & DIAPERS PN 5",
-        "FE6 - MILK & DIAPERS PN 6",
-        "FE7 - MILK & DIAPERS PN 7",
-        "FE8 - MILK & DIAPERS PN 8",
-        "GA1 - BW KIRI",
-        "GB1 - BW TENGAH",
-        "GB2 - BW KANAN",
-        "GD1 - TP ELEKTRIK",
-        "HB1 - MEJA COC ACC 1",
-        "HB2 - MEJA COC ACC 2",
-        "HB3 - MEJA COC ACC 3",
-        "HB4 - MEJA COC ACC 4",
-        "HB5- MEJA COC ACC 5",
-        "HB6 - MEJA COC ACC 6",
-        "HB7 - MEJA COC ACC 7",
-        "HC1 - COC-ACR SILVERQUEEN",
-        "HD1 - COC-ACR CADBURY",
-        "HE1 - COC-ACR BATERAI HOOK",
-        "HF1 - COC-ACR BATERAI SUDUT",
-        "HG1 - COC-ACR KONDOM",
-        "HH1 - COC-ACR STREPSILS",
-        "HI1 - COC-ACR FISHERMAN'S",
-        "HL1 - COC-MINI COC",
-        "HM1 - COC-ACR CHUPA MEJA OLD",
-        "HN1 - COC-ACR CHUPA MEJA ACC",
-        "H01 - COC-AREA MATERAI",
-        "HS1 - RAK TRAY NDS",
-        "HT1 - SOUR BELT 1M",
-        "JA1 - TOYS",
-        "JC1 - TOYS-STD ROTATING",
-        "KI1 - PC HB-ACR INSERT 1",
-        "KJ1 - PC HB-ACR HC 1",
-        "KL1 - ACR SHEET MASK 1 HB",
-        "K01 - PC HB-ACR DECOR 1",
-        "KP1 - PC HB-STD PINKBR 1",
-        "KS1 - PLU K ACR HAIR COLOR 3/KS1",
-        "MC1 - MEDICINE-BABY-ACR 1",
-        "MD1 - MEDICINE-BABY-ACR 2",
-        "ME1 - MEDICINE-BABY-ACR 3",
-        "MI1 - MEDICINE & BABY CARE PN1",
-        "M12 - MEDICINE & BABY CARE PN2",
-        "NA1 - FREEZER ICE WALLS 1",
-        "NG1 - FREEZER ICW SHR GLICO-AICE 1",
-        "NP1 - FREEZER NUG BENFARM 1",
-        "OA1 - BREAD CORNER 1",
-        "OA2 - BREAD CORNER 2",
-        "OC1 - TRAY KEJU",
-        "PA1 - RAK DISPLAY RTD SIAP SEDUH",
-        "PA2 - RAK TAMPUNG RTD SIAP SEDUH",
-        "PB1 - RAK DISPLAY ACR NOODLE CUP 1",
-        "PB2 - RAK DISPLAY ACR NOODLE CUP 2",
-        "PB3 - RAK TAMPUNG ACR NOODLE CUP",
-        "Q31 - SANDULT 1R",
-        "Q32 - SANDULT 2R",
-        "Q41 - MISCSTA 1R",
-        "Q42 - MISCSTA 2R",
-        "Q51 - HH 1R",
-        "Q52 - HH 2R",
-        "Q53 - HH 3R NP",
-        "Q54 - HH 4R NP",
-        "Q55 - HH 5R NP",
-        "Q56 - HH 6R",
-        "Q61 - RAK ONEPRICE (1)",
-        "QA1 - RAK TISSUE 1R",
-        "QF1 - ACR MISC",
-        "QG1 - WS MASKER (EX MOTORIS)",
-        "QH1 - WS/GD KARAKTER",
-        "QI1 - WDU CSP STICKER",
-        "QJ1 - WS AKSESORIS",
-        "QK1 - WS AIR FRESHNER",
-        "QL1 - WS UNDERWEAR",
-        "QM1 - SIDE WS AKSESORIS",
-        "Q01 - AREA AMPLOP FESTIVE",
-        "QP1 - FDU SRK KERTAS KADO",
-        "QR1 - WS CORONA",
-        "QS1 - ACR STATIONARY BERTINGKAT",
-        "QU1 - ACR KAMPER",
-        "QX1 - STD MASKER B21",
-        "QY1 - ACR PET FOOD NEW",
-        "S11 - PERSONAL & TOOTH CARE 1",
-        "S12 - PERSONAL & TOOTH CARE 2",
-        "S13 - PERSONAL & TOOTH CARE",
-        "S14 - PERSONAL & TOOTH CARE 4",
-        "S15 - PERSONAL & TOOTH CARE 5",
-        "S16 - PERSONAL & TOOTH CARE 6",
-        "S17 - PERSONAL & TOOTH CARE 7",
-        "S18 - PERSONAL & TOOTH CARE 8",
-        "Z31 - AMBALAN SIP",
-        "Z51 - RAK SO IC/AC/AM",
-        "ZAO - MACHINE ICE SLUSH",
-        "ZA1 - MACHINE LIPTON",
-        "ZA2 - MACHINE DELONGHI",
-        "ZA4 - MACHINE FRANKE",
-        "ZA5 - MACHINE HOTSIGN",
-        "ZA6 - ACR POJOK SEDUH",
-        "ZA7 - MACHINE MILO",
-        "ZA8 - MACHINE NESTLE KALINA",
-        "ZA9 - MACHINE POTUM",
-        "ZAA - MACHINE VENUSTA",
-        "ZABRAK RAW-RPC-CONDIMENT",
-        "ZAC - FREEZER ICE CUBE",
-        "ZAD - FREEZER BOILED",
-        "ZAE - OPEN FREZER A-YELLOW",
-        "ZAF - FREZER ES PUTER HOMI",
-        "ZAG - BEANSPOT - RTD COFFE",
-        "ZAI - BEANSPOT - SHOWCASE BKRY FPG 1",
-        "ZAJ - BEANSPOT - SHOWCASE BKRY FPG 2",
-        "ZAK - BEANSPOT JOLLY TIME",
-        "ZAL - BEANSPOT BASIC - ACR RTD",
-        "ZAM - BEANSPOT BASIC - ACR SACHET",
-        "ZAN - ACR NOD CUP BSC",
-        "ZB1 - Z-E VOUCHER 1",
-        "ZB2 - Z-E VOUCHER 2",
-        "ZC1 - Z-PLU K & SURAT TUGAS 1",
-        "ZC2 - Z-PLU K & SURAT TUGAS 2",
-        "ZC3 - Z-PLU K & SURAT TUGAS 3",
-        "ZC4 - Z-PLU K & SURAT TUGAS 4",
-        "ZC5 - Z-PLU K & SURAT TUGAS 5",
-        "ZD1 - Z-EMBALASI 1",
-        "ZG1 - Z-RAK ADD DIAPERS 1",
-        "ZI1 - Z-PROMOTION GOODS&BM 1",
-        "ZK1 - Z-GD ONESHOOT 1",
-        "ZL1 - Z-GD LOKALPOLITIS 1",
-        "ZM1 - RACK ON FREEZER",
-        "ZN1 - GB TAG NH FOOD",
-        "ZN2 - GB TAG NH NFOOD",
-        "ZQ1 - Z-GDF AIR MINERAL 1.5",
-        "ZQ1Z - GDF AIR MINERAL 1.5",
-        "ZR1 - Z-FDU DISPLAY GALON",
-        "ZS1 - Z-FDU AIR CUP KARTON",
-        "ZS1 - ZFDU AIR CUP KARTON",
-        "ZU1 - FDU FOCUS TELUR",
-        "ZV1 - Z-FDU CORONA",
-        "ZW1 - FLOOR BAZAAR"
-    ];
+function setSelisih(jenis) {
 
-    const uniqueMasterRak =
-        [...new Set(masterDataRak)];
+    document.getElementById(
+        "soJenisSelisih"
+    ).value = jenis;
 
 
-    /* =========================================================
-       FORMAT
-       ========================================================= */
+    if (jenis === "-") {
 
-    function formatRupiah(angka) {
+        document.getElementById(
+            "btnTglMinus"
+        ).classList.add(
+            "active-minus"
+        );
 
-        return new Intl.NumberFormat(
-            "id-ID",
-            {
-                style: "currency",
-                currency: "IDR",
-                minimumFractionDigits: 0
-            }
-        ).format(angka);
+        document.getElementById(
+            "btnTglPlus"
+        ).classList.remove(
+            "active-plus"
+        );
 
-    }
+    } else {
 
+        document.getElementById(
+            "btnTglMinus"
+        ).classList.remove(
+            "active-minus"
+        );
 
-    function formatTanggal(dateStr) {
-
-        if (!dateStr) return "";
-
-        const d =
-            new Date(dateStr);
-
-        return d.toLocaleDateString(
-            "id-ID",
-            {
-                day: "2-digit",
-                month: "2-digit",
-                year: "numeric"
-            }
+        document.getElementById(
+            "btnTglPlus"
+        ).classList.add(
+            "active-plus"
         );
 
     }
+
+}
+
+
+/* =========================================================
+   14. STATUS RAK
+========================================================= */
+
+function renderStatusRak() {
+
+    const container =
+        document.getElementById(
+            "listStatusRak"
+        );
+
+    const filter =
+        document.getElementById(
+            "filterCekRak"
+        ).value;
+
+
+    container.innerHTML = "";
+
+
+    const rakSudahSO =
+        [
+            ...new Set(
+                dataSO.map(
+                    item =>
+                        String(
+                            item.rak || ""
+                        ).toUpperCase()
+                )
+            )
+        ];
+
+
+    let totalRakSelesai = 0;
+
+    let htmlContent = "";
+
+
+    uniqueMasterRak.forEach(rak => {
+
+        const isDone =
+            rakSudahSO.includes(
+                rak.toUpperCase()
+            );
+
+
+        if (isDone) {
+
+            totalRakSelesai++;
+
+        }
+
+
+        let showItem = true;
+
+
+        if (
+            filter === "sudah" &&
+            !isDone
+        ) {
+
+            showItem = false;
+
+        }
+
+
+        if (
+            filter === "belum" &&
+            isDone
+        ) {
+
+            showItem = false;
+
+        }
+
+
+        if (showItem) {
+
+            const badge =
+                isDone
+
+                ? '<span class="status-badge status-sudah">' +
+                  'SUDAH' +
+                  '</span>'
+
+                : '<span class="status-badge status-belum">' +
+                  'BELUM' +
+                  '</span>';
+
+
+            htmlContent +=
+                '<div class="rak-item">' +
+                '<span class="rak-name">' +
+                rak +
+                '</span>' +
+                badge +
+                '</div>';
+
+        }
+
+    });
+
+
+    container.innerHTML =
+        htmlContent;
+
+
+    const persen =
+        uniqueMasterRak.length > 0
+
+        ? (
+            totalRakSelesai /
+            uniqueMasterRak.length
+        ) * 100
+
+        : 0;
 
 
     document.getElementById(
-        "soTanggalInput"
-    ).value =
-        new Date().toISOString().split("T")[0];
+        "progressSORak"
+    ).style.width =
+        persen + "%";
 
 
-    /* =========================================================
-       DROPDOWN RAK
-       ========================================================= */
+    document.getElementById(
+        "textProgressSO"
+    ).innerText =
+        totalRakSelesai +
+        " dari " +
+        uniqueMasterRak.length +
+        " Rak Terselesaikan (" +
+        persen.toFixed(1) +
+        "%)";
 
-    function renderCustomRakList(filterText = "") {
-
-        let listContainer =
-            document.getElementById(
-                "customRakList"
-            );
-
-        listContainer.innerHTML = "";
-
-
-        let filtered =
-            uniqueMasterRak.filter(
-                r =>
-                    r.toLowerCase()
-                    .includes(
-                        filterText.toLowerCase()
-                    )
-            );
+}
 
 
-        if (filtered.length === 0) {
+/* =========================================================
+   15. RENDER DATA
+========================================================= */
 
-            listContainer.innerHTML =
-                `<div class="custom-dropdown-item">
-                    Rak tidak ditemukan
-                </div>`;
+function renderSO() {
 
-            return;
+    const tbody =
+        document.getElementById(
+            "tbodySO"
+        );
+
+    tbody.innerHTML = "";
+
+
+    const keyword =
+        document.getElementById(
+            "inputCari"
+        ).value
+        .toLowerCase();
+
+
+    const filterStatus =
+        document.getElementById(
+            "filterStatus"
+        ).value;
+
+
+    const filterTgl =
+        document.getElementById(
+            "filterTanggal"
+        ).value;
+
+
+    let rakPlus = 0;
+
+    let rakMinus = 0;
+
+    let rakNol = 0;
+
+    let totalVal = 0;
+
+
+    dataSO.forEach(item => {
+
+        const val =
+            Number(item.val) || 0;
+
+        totalVal += val;
+
+
+        if (val > 0) {
+
+            rakPlus++;
+
+        } else if (val < 0) {
+
+            rakMinus++;
+
+        } else {
+
+            rakNol++;
 
         }
 
-
-        filtered.forEach(rak => {
-
-            let item =
-                document.createElement("div");
-
-            item.className =
-                "custom-dropdown-item";
-
-            item.innerText =
-                rak;
+    });
 
 
-            item.onclick = function() {
+    let filteredData =
+        [...dataSO].filter(item => {
 
-                document.getElementById(
-                    "soRakInput"
-                ).value = rak;
+            const rak =
+                String(
+                    item.rak || ""
+                ).toLowerCase();
 
-                listContainer.style.display =
-                    "none";
+            const pic =
+                String(
+                    item.pic || ""
+                ).toLowerCase();
 
-            };
+
+            const matchSearch =
+                rak.includes(keyword) ||
+                pic.includes(keyword);
 
 
-            listContainer.appendChild(item);
+            const matchTgl =
+                filterTgl
+                ? item.tgl === filterTgl
+                : true;
+
+
+            let matchFilter = true;
+
+
+            const val =
+                Number(item.val) || 0;
+
+
+            if (
+                filterStatus === "plus"
+            ) {
+
+                matchFilter =
+                    val > 0;
+
+            }
+
+
+            if (
+                filterStatus === "minus"
+            ) {
+
+                matchFilter =
+                    val < 0;
+
+            }
+
+
+            if (
+                filterStatus === "nol"
+            ) {
+
+                matchFilter =
+                    val === 0;
+
+            }
+
+
+            return (
+                matchSearch &&
+                matchTgl &&
+                matchFilter
+            );
 
         });
 
-    }
+
+    filteredData.sort(
+        (a, b) =>
+            Number(
+                b.waktu_update || 0
+            ) -
+            Number(
+                a.waktu_update || 0
+            )
+    );
 
 
-    function bukaDropdownRak() {
+    document.getElementById(
+        "statTotalRak"
+    ).innerText =
+        dataSO.length;
 
-        renderCustomRakList(
-            document.getElementById(
-                "soRakInput"
-            ).value
+
+    document.getElementById(
+        "statRakPlus"
+    ).innerText =
+        rakPlus;
+
+
+    document.getElementById(
+        "statRakMinus"
+    ).innerText =
+        rakMinus;
+
+
+    document.getElementById(
+        "statRakNol"
+    ).innerText =
+        rakNol;
+
+
+    let formatTotalStr =
+        (
+            totalVal < 0
+            ? "-"
+            : ""
+        ) +
+        formatRupiah(
+            Math.abs(totalVal)
         );
 
+
+    const boxTotal =
         document.getElementById(
-            "customRakList"
-        ).style.display =
-            "block";
-
-    }
-
-
-    function filterCustomRak() {
-
-        renderCustomRakList(
-            document.getElementById(
-                "soRakInput"
-            ).value
+            "totalSelisihBesar"
         );
 
-        document.getElementById(
-            "customRakList"
-        ).style.display =
-            "block";
+
+    boxTotal.innerText =
+        formatTotalStr;
+
+
+    boxTotal.style.color =
+        totalVal < 0
+        ? "#e74c3c"
+        : (
+            totalVal > 0
+            ? "#2ecc71"
+            : "#ffffff"
+        );
+
+
+    if (filteredData.length === 0) {
+
+        tbody.innerHTML =
+            '<tr>' +
+            '<td colspan="7" class="empty-data">' +
+            'Belum ada data SO' +
+            '</td>' +
+            '</tr>';
 
     }
 
 
-    document.addEventListener(
-        "click",
-        function(e) {
+    filteredData.forEach(
+        (item, index) => {
 
-            if (
-                !e.target.closest(
-                    ".custom-dropdown-container"
-                )
-            ) {
+            const val =
+                Number(item.val) || 0;
 
-                let list =
-                    document.getElementById(
-                        "customRakList"
-                    );
 
-                if (list) {
+            const isPlus =
+                val > 0;
 
-                    list.style.display =
-                        "none";
+            const isNol =
+                val === 0;
 
-                }
 
-            }
+            const valTampil =
+                (
+                    isPlus
+                    ? "+ "
+                    : (
+                        isNol
+                        ? ""
+                        : "- "
+                    )
+                ) +
+                formatRupiah(
+                    Math.abs(val)
+                );
+
+
+            const statusTeks =
+                isPlus
+                ? "PLUS"
+                : (
+                    isNol
+                    ? "NIHIL"
+                    : "MINUS"
+                );
+
+
+            const warna =
+                isPlus
+                ? "var(--success-green)"
+                : (
+                    isNol
+                    ? "#333"
+                    : "var(--danger-red)"
+                );
+
+
+            tbody.innerHTML +=
+
+                "<tr>" +
+
+                "<td>" +
+                (index + 1) +
+                "</td>" +
+
+                "<td><strong>" +
+                escapeHTML(item.rak || "") +
+                "</strong></td>" +
+
+                "<td>" +
+                escapeHTML(item.pic || "") +
+                "</td>" +
+
+                "<td>" +
+                formatTanggal(item.tgl) +
+                "</td>" +
+
+                "<td style=\"color:" +
+                warna +
+                ";font-weight:bold;\">" +
+                valTampil +
+                "</td>" +
+
+                "<td>" +
+                statusTeks +
+                "</td>" +
+
+                "<td>" +
+
+                '<button class="btn-action-sm btn-edit" ' +
+                'onclick="editSO(\'' +
+                String(item.id) +
+                '\')">' +
+
+                '<i class="fas fa-edit"></i>' +
+
+                "</button> " +
+
+                '<button class="btn-action-sm btn-del" ' +
+                'onclick="hapusSO(\'' +
+                String(item.id) +
+                '\')">' +
+
+                '<i class="fas fa-trash"></i>' +
+
+                "</button>" +
+
+                "</td>" +
+
+                "</tr>";
 
         }
     );
 
 
-    /* =========================================================
-       PLUS / MINUS
-       ========================================================= */
+    renderStatusRak();
 
-    function setSelisih(jenis) {
+}
 
-        document.getElementById(
-            "soJenisSelisih"
-        ).value = jenis;
 
+/* =========================================================
+   16. AMANKAN TEXT HTML
+========================================================= */
 
-        if (jenis === "-") {
+function escapeHTML(text) {
 
-            document.getElementById(
-                "btnTglMinus"
-            ).classList.add(
-                "active-minus"
-            );
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 
-            document.getElementById(
-                "btnTglPlus"
-            ).classList.remove(
-                "active-plus"
-            );
+}
 
-        } else {
 
-            document.getElementById(
-                "btnTglMinus"
-            ).classList.remove(
-                "active-minus"
-            );
+/* =========================================================
+   17. EDIT
+========================================================= */
 
-            document.getElementById(
-                "btnTglPlus"
-            ).classList.add(
-                "active-plus"
-            );
+function editSO(id) {
 
-        }
-
-    }
-
-
-    /* =========================================================
-       STATUS RAK
-       ========================================================= */
-
-    function renderStatusRak() {
-
-        let container =
-            document.getElementById(
-                "listStatusRak"
-            );
-
-        let filter =
-            document.getElementById(
-                "filterCekRak"
-            ).value;
-
-
-        container.innerHTML = "";
-
-
-        let rakSudahSO =
-            [
-                ...new Set(
-                    dataSO.map(
-                        item =>
-                            String(
-                                item.rak || ""
-                            ).toUpperCase()
-                    )
-                )
-            ];
-
-
-        let totalRakSelesai = 0;
-
-        let htmlContent = "";
-
-
-        uniqueMasterRak.forEach(rak => {
-
-            let isDone =
-                rakSudahSO.includes(
-                    rak.toUpperCase()
-                );
-
-
-            if (isDone) {
-
-                totalRakSelesai++;
-
-            }
-
-
-            let showItem = true;
-
-
-            if (
-                filter === "sudah" &&
-                !isDone
-            ) {
-
-                showItem = false;
-
-            }
-
-
-            if (
-                filter === "belum" &&
-                isDone
-            ) {
-
-                showItem = false;
-
-            }
-
-
-            if (showItem) {
-
-                let badge =
-                    isDone
-
-                        ? `<span class="status-badge status-sudah">
-                            SUDAH
-                           </span>`
-
-                        : `<span class="status-badge status-belum">
-                            BELUM
-                           </span>`;
-
-
-                htmlContent +=
-                    `<div class="rak-item">
-                        <span class="rak-name">
-                            ${rak}
-                        </span>
-                        ${badge}
-                    </div>`;
-
-            }
-
-        });
-
-
-        container.innerHTML =
-            htmlContent;
-
-
-        let persen =
-            uniqueMasterRak.length > 0
-                ? (
-                    totalRakSelesai /
-                    uniqueMasterRak.length
-                ) * 100
-                : 0;
-
-
-        document.getElementById(
-            "progressSORak"
-        ).style.width =
-            persen + "%";
-
-
-        document.getElementById(
-            "textProgressSO"
-        ).innerText =
-            `${totalRakSelesai} dari ${uniqueMasterRak.length} Rak Terselesaikan (${persen.toFixed(1)}%)`;
-
-    }
-
-
-    /* =========================================================
-       RENDER DATA
-       ========================================================= */
-
-    function renderSO() {
-
-        let tbody =
-            document.getElementById(
-                "tbodySO"
-            );
-
-        tbody.innerHTML = "";
-
-
-        let keyword =
-            document.getElementById(
-                "inputCari"
-            ).value.toLowerCase();
-
-
-        let filterStatus =
-            document.getElementById(
-                "filterStatus"
-            ).value;
-
-
-        let filterTgl =
-            document.getElementById(
-                "filterTanggal"
-            ).value;
-
-
-        let rakPlus = 0;
-
-        let rakMinus = 0;
-
-        let rakNol = 0;
-
-        let totalVal = 0;
-
-
-        let filteredData =
-            [...dataSO].filter(item => {
-
-                let rak =
-                    String(
-                        item.rak || ""
-                    ).toLowerCase();
-
-                let pic =
-                    String(
-                        item.pic || ""
-                    ).toLowerCase();
-
-
-                let matchSearch =
-                    rak.includes(keyword) ||
-                    pic.includes(keyword);
-
-
-                let matchTgl =
-                    filterTgl
-                        ? item.tgl === filterTgl
-                        : true;
-
-
-                let matchFilter = true;
-
-
-                if (
-                    filterStatus === "plus"
-                ) {
-
-                    matchFilter =
-                        Number(item.val) > 0;
-
-                }
-
-
-                if (
-                    filterStatus === "minus"
-                ) {
-
-                    matchFilter =
-                        Number(item.val) < 0;
-
-                }
-
-
-                if (
-                    filterStatus === "nol"
-                ) {
-
-                    matchFilter =
-                        Number(item.val) === 0;
-
-                }
-
-
-                return (
-                    matchSearch &&
-                    matchTgl &&
-                    matchFilter
-                );
-
-            });
-
-
-        filteredData.sort(
-            (a, b) =>
-                Number(b.waktu_update || 0) -
-                Number(a.waktu_update || 0)
+    const item =
+        dataSO.find(
+            d =>
+                String(d.id) ===
+                String(id)
         );
 
 
-        dataSO.forEach(item => {
+    if (!item) {
 
-            let val =
-                Number(item.val) || 0;
-
-
-            totalVal += val;
-
-
-            if (val > 0) {
-
-                rakPlus++;
-
-            } else if (val < 0) {
-
-                rakMinus++;
-
-            } else {
-
-                rakNol++;
-
-            }
-
-        });
-
-
-        document.getElementById(
-            "statTotalRak"
-        ).innerText =
-            dataSO.length;
-
-
-        document.getElementById(
-            "statRakPlus"
-        ).innerText =
-            rakPlus;
-
-
-        document.getElementById(
-            "statRakMinus"
-        ).innerText =
-            rakMinus;
-
-
-        document.getElementById(
-            "statRakNol"
-        ).innerText =
-            rakNol;
-
-
-        let formatTotalStr =
-            (
-                totalVal < 0
-                    ? "-"
-                    : ""
-            ) +
-            formatRupiah(
-                Math.abs(totalVal)
-            );
-
-
-        let boxTotal =
-            document.getElementById(
-                "totalSelisihBesar"
-            );
-
-
-        boxTotal.innerText =
-            formatTotalStr;
-
-
-        boxTotal.style.color =
-            totalVal < 0
-                ? "#e74c3c"
-                : (
-                    totalVal > 0
-                        ? "#2ecc71"
-                        : "#ffffff"
-                );
-
-
-        filteredData.forEach(
-            (item, index) => {
-
-                let val =
-                    Number(item.val) || 0;
-
-
-                let isPlus =
-                    val > 0;
-
-
-                let isNol =
-                    val === 0;
-
-
-                let valTampil =
-                    (
-                        isPlus
-                            ? "+ "
-                            : (
-                                isNol
-                                    ? ""
-                                    : "- "
-                            )
-                    ) +
-                    formatRupiah(
-                        Math.abs(val)
-                    );
-
-
-                let statusTeks =
-                    isPlus
-                        ? "PLUS"
-                        : (
-                            isNol
-                                ? "NIHIL"
-                                : "MINUS"
-                        );
-
-
-                tbody.innerHTML +=
-
-                    `<tr>
-
-                        <td>
-                            ${index + 1}
-                        </td>
-
-                        <td>
-                            <strong>
-                                ${item.rak || ""}
-                            </strong>
-                        </td>
-
-                        <td>
-                            ${item.pic || ""}
-                        </td>
-
-                        <td>
-                            ${formatTanggal(item.tgl)}
-                        </td>
-
-                        <td
-                            style="
-                                color:
-                                ${
-                                    isPlus
-                                        ? "var(--success-green)"
-                                        : (
-                                            isNol
-                                                ? "#333"
-                                                : "var(--danger-red)"
-                                        )
-                                };
-                                font-weight:bold;
-                            "
-                        >
-                            ${valTampil}
-                        </td>
-
-                        <td>
-                            ${statusTeks}
-                        </td>
-
-                        <td>
-
-                            <button
-                                class="btn-action-sm btn-edit"
-                                onclick="editSO('${item.id}')"
-                            >
-                                <i class="fas fa-edit"></i>
-                            </button>
-
-                            <button
-                                class="btn-action-sm btn-del"
-                                onclick="hapusSO('${item.id}')"
-                            >
-                                <i class="fas fa-trash"></i>
-                            </button>
-
-                        </td>
-
-                    </tr>`;
-
-            }
+        alert(
+            "Data tidak ditemukan."
         );
 
-
-        renderStatusRak();
-
-    }
-
-
-    /* =========================================================
-       EDIT DATA
-       ========================================================= */
-
-    function editSO(id) {
-
-        let item =
-            dataSO.find(
-                d =>
-                    String(d.id) ===
-                    String(id)
-            );
-
-
-        if (!item) {
-
-            alert(
-                "Data tidak ditemukan."
-            );
-
-            return;
-
-        }
-
-
-        document.getElementById(
-            "soEditId"
-        ).value =
-            item.id;
-
-
-        document.getElementById(
-            "soRakInput"
-        ).value =
-            item.rak || "";
-
-
-        document.getElementById(
-            "soPetugasInput"
-        ).value =
-            item.pic || "";
-
-
-        document.getElementById(
-            "soTanggalInput"
-        ).value =
-            item.tgl || "";
-
-
-        document.getElementById(
-            "soKeteranganInput"
-        ).value =
-            item.ket || "";
-
-
-        let nilai =
-            Number(item.val) || 0;
-
-
-        if (nilai < 0) {
-
-            setSelisih("-");
-
-            document.getElementById(
-                "soNominalInput"
-            ).value =
-                Math.abs(nilai);
-
-        }
-
-        else if (nilai > 0) {
-
-            setSelisih("+");
-
-            document.getElementById(
-                "soNominalInput"
-            ).value =
-                nilai;
-
-        }
-
-        else {
-
-            setSelisih("+");
-
-            document.getElementById(
-                "soNominalInput"
-            ).value =
-                0;
-
-        }
-
-
-        document.getElementById(
-            "btnSimpanSO"
-        ).innerHTML =
-            '<i class="fas fa-save"></i> Update Online';
-
-
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
+        return;
 
     }
 
 
-    /* =========================================================
-       RESET FORM
-       ========================================================= */
-
-    function resetFormSO() {
-
-        document.getElementById(
-            "soEditId"
-        ).value = "";
+    document.getElementById(
+        "soEditId"
+    ).value =
+        item.id;
 
 
-        document.getElementById(
-            "soRakInput"
-        ).value = "";
+    document.getElementById(
+        "soRakInput"
+    ).value =
+        item.rak || "";
 
 
-        document.getElementById(
-            "soPetugasInput"
-        ).value = "";
+    document.getElementById(
+        "soPetugasInput"
+    ).value =
+        item.pic || "";
 
+
+    document.getElementById(
+        "soTanggalInput"
+    ).value =
+        item.tgl || "";
+
+
+    document.getElementById(
+        "soKeteranganInput"
+    ).value =
+        item.ket || "";
+
+
+    const val =
+        Number(item.val) || 0;
+
+
+    if (val < 0) {
 
         setSelisih("-");
 
+        document.getElementById(
+            "soNominalInput"
+        ).value =
+            Math.abs(val);
+
+    }
+
+    else if (val > 0) {
+
+        setSelisih("+");
 
         document.getElementById(
             "soNominalInput"
-        ).value = "";
-
-
-        document.getElementById(
-            "soTanggalInput"
         ).value =
-            new Date()
-            .toISOString()
-            .split("T")[0];
+            val;
 
+    }
 
-        document.getElementById(
-            "soKeteranganInput"
-        ).value = "";
+    else {
 
+        setSelisih("+");
 
         document.getElementById(
-            "btnSimpanSO"
-        ).innerHTML =
-            '<i class="fas fa-cloud-upload-alt"></i> Simpan Online';
+            "soNominalInput"
+        ).value =
+            0;
 
     }
 
 
-    /* =========================================================
-       SAAT WEBSITE DIBUKA
-       ========================================================= */
+    const tombol =
+        document.getElementById(
+            "btnSimpanSO"
+        );
 
-    window.onload = function() {
 
-        cekKodeToko();
+    tombol.innerHTML =
+        '<i class="fas fa-save"></i> Update Data';
 
-    };
 
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+/* =========================================================
+   18. RESET
+========================================================= */
+
+function resetFormSO() {
+
+    document.getElementById(
+        "soEditId"
+    ).value = "";
+
+
+    document.getElementById(
+        "soRakInput"
+    ).value = "";
+
+
+    document.getElementById(
+        "soPetugasInput"
+    ).value = "";
+
+
+    setSelisih("-");
+
+
+    document.getElementById(
+        "soNominalInput"
+    ).value = "";
+
+
+    document.getElementById(
+        "soTanggalInput"
+    ).value =
+        new Date()
+        .toISOString()
+        .split("T")[0];
+
+
+    document.getElementById(
+        "soKeteranganInput"
+    ).value = "";
+
+
+    document.getElementById(
+        "btnSimpanSO"
+    ).innerHTML =
+        '<i class="fas fa-cloud-upload-alt"></i> Simpan Online';
+
+}
+
+
+/* =========================================================
+   19. MULAI APLIKASI
+========================================================= */
+
+window.onload = async function() {
+
+    document.getElementById(
+        "soTanggalInput"
+    ).value =
+        new Date()
+        .toISOString()
+        .split("T")[0];
+
+
+    cekKodeToko();
+
+};
 
 </script>
 
 </body>
-    </html>
+</html>
