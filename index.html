@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>MPKT V2 2026 - SO Rak Online</title>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+:root{--alfa-red:#da251d;--alfa-dark-red:#b31d17;--nav-bg:#2c3641;--bg-color:#f4f6f9;--card-bg:#fff;--text-main:#333;--text-muted:#6c757d;--border-color:#dee2e6;--success-green:#28a745;--danger-red:#dc3545;--info-blue:#007bff;--backup-orange:#e67e22;--plus-bg:#d4edda;--plus-text:#155724;--minus-bg:#f8d7da;--minus-text:#721c24}
+*{box-sizing:border-box;margin:0;padding:0;font-family:Roboto,sans-serif;-webkit-tap-highlight-color:transparent}
+body{background:#e9ecef;color:var(--text-main);display:flex;justify-content:center}.app-container{width:100%;max-width:1200px;background:var(--bg-color);min-height:100vh;position:relative;box-shadow:0 0 20px rgba(0,0,0,.15)}
+header{background:var(--alfa-red);color:#fff;padding:15px 10px;text-align:center;position:sticky;top:0;z-index:100}header h1{font-size:18px;font-weight:700;letter-spacing:.5px;margin-bottom:4px;cursor:pointer;display:flex;justify-content:center;align-items:center;gap:5px}header p{font-size:11px;opacity:.9;display:flex;align-items:center;justify-content:center;gap:4px}
+nav{background:var(--nav-bg);display:flex;overflow-x:auto;scrollbar-width:none}.nav-item{flex:1;padding:12px 5px;text-align:center;font-size:12px;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#fff;border-bottom:3px solid var(--alfa-red);background:rgba(255,255,255,.05)}
+main{padding:15px;padding-bottom:30px}.card{background:#fff;border-radius:8px;padding:15px;margin-bottom:15px;box-shadow:0 2px 4px rgba(0,0,0,.08);border:1px solid rgba(0,0,0,.03)}.card-header{font-size:15px;font-weight:700;color:var(--alfa-red);margin-bottom:4px;display:flex;align-items:center;gap:6px}.card-subtitle{font-size:11px;color:var(--text-muted);margin-bottom:12px}
+.form-row{display:flex;gap:10px}.form-group{flex:1;margin-bottom:12px;position:relative}.form-label{display:block;font-size:12px;font-weight:700;color:#495057;margin-bottom:6px}.form-control{width:100%;padding:10px;border:1px solid var(--border-color);border-radius:6px;font-size:13px;outline:none;background:#fff}.form-control:focus{border-color:var(--alfa-red)}textarea.form-control{resize:vertical;min-height:60px}
+.custom-dropdown-container{position:relative;width:100%}.custom-dropdown-list{position:absolute;top:100%;left:0;right:0;max-height:180px;overflow-y:auto;background:#fff;border:1px solid var(--alfa-red);border-radius:0 0 6px 6px;z-index:999;display:none;box-shadow:0 4px 6px rgba(0,0,0,.1)}.custom-dropdown-item{padding:10px;font-size:12px;cursor:pointer;border-bottom:1px solid #f1f3f5;font-weight:500}.custom-dropdown-item:hover{background:#f8d7da;color:var(--alfa-dark-red)}
+.selisih-toggle{display:flex;width:35%;border:1px solid var(--border-color);border-radius:6px;overflow:hidden;background:#fff}.selisih-toggle button{flex:1;border:0;background:transparent;font-size:20px;font-weight:bold;cursor:pointer;color:var(--text-muted)}.selisih-toggle button.active-minus{background:var(--danger-red);color:#fff}.selisih-toggle button.active-plus{background:var(--success-green);color:#fff}
+.btn-group-action{display:flex;gap:8px;margin-top:5px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:6px;cursor:pointer;font-weight:600;padding:10px;font-size:12px;color:#fff;text-align:center}.btn:disabled{opacity:.6}.btn-primary{background:var(--alfa-red);flex:2}.btn-secondary{background:#6c757d;flex:1}.btn-info{background:var(--info-blue);flex:1}.btn-danger{background:var(--danger-red);flex:1}
+
+#storeNameWrap{cursor:default}
+#storeName{cursor:default}
+.store-settings-btn{width:30px;height:30px;border:0;border-radius:50%;background:#fff;color:var(--alfa-red);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;margin-left:3px;box-shadow:0 1px 4px rgba(0,0,0,.2)}
+.store-settings-btn:active{transform:scale(.94)}
+.print-report-btn{background:#343a40!important;flex:1}
+@page{
+  size:A4 portrait;
+  margin:12mm;
+}
+@media print{
+  html,body{
+    width:210mm!important;
+    min-width:210mm!important;
+    max-width:210mm!important;
+    min-height:0!important;
+    height:auto!important;
+    background:#fff!important;
+    display:block!important;
+    margin:0!important;
+    padding:0!important;
+  }
+  .app-container{
+    display:none!important;
+  }
+  header,nav,.so-top-row,.so-bottom-row,#errorBox,#photoModal{
+    display:none!important;
+  }
+  main{
+    display:none!important;
+    padding:0!important;
+    margin:0!important;
+  }
+  #reportPrintArea{
+    display:block!important;
+    width:100%!important;
+    min-width:0!important;
+    max-width:none!important;
+    margin:0!important;
+    padding:0!important;
+    position:static!important;
+  }
+  .print-only-title{
+    display:block!important;
+    width:100%!important;
+    text-align:center!important;
+  }
+  .print-report-table{
+    display:table!important;
+    width:100%!important;
+    max-width:100%!important;
+    border-collapse:collapse!important;
+    table-layout:fixed!important;
+    font-size:10px!important;
+    margin:0!important;
+  }
+  .print-report-table th,.print-report-table td{
+    border:1px solid #333!important;
+    padding:5px!important;
+    word-wrap:break-word!important;
+    overflow-wrap:break-word!important;
+  }
+}
+.print-only-title{display:none}
+.stat-so-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px}.stat-so-box{background:#f8f9fa;border:1px solid var(--border-color);border-radius:6px;padding:8px 4px;text-align:center}.stat-so-box .num{font-size:14px;font-weight:700}.stat-so-box .label{font-size:9px;color:var(--text-muted);font-weight:600;margin-top:2px}.total-selisih-box{background:#2c3641;color:#fff;border-radius:6px;padding:12px;text-align:center;margin-bottom:15px}.total-selisih-box .title{font-size:10px;opacity:.8;font-weight:600}.total-selisih-box .value{font-size:20px;font-weight:700;color:#2ecc71;margin-top:3px}
+.rak-item{display:flex;justify-content:space-between;align-items:center;padding:10px 8px;border-bottom:1px solid #f1f3f5;font-size:11px}.rak-name{padding-right:8px}.status-badge{padding:4px 6px;border-radius:4px;font-size:9px;font-weight:bold;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}.status-sudah{background:var(--plus-bg);color:var(--plus-text)}.status-belum{background:var(--minus-bg);color:var(--minus-text)}
+.filter-container{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}.filter-container>*{flex:1;min-width:130px}.table-responsive{overflow-x:auto;border-radius:6px;border:1px solid var(--border-color)}table{width:100%;border-collapse:collapse;font-size:11px;text-align:left}th{background:#f1f3f5;padding:8px 6px;border-bottom:2px solid var(--border-color);white-space:nowrap}td{padding:8px 6px;border-bottom:1px solid var(--border-color);vertical-align:middle}.action-group{display:flex;gap:4px}.btn-action-sm{border:0;padding:5px 6px;border-radius:4px;cursor:pointer;color:#fff}.btn-del{background:var(--danger-red)}.btn-edit{background:var(--info-blue)}.btn-photo{background:#6f42c1}.progress-bar{width:100%;height:12px;background:#e9ecef;border-radius:6px;overflow:hidden;margin-bottom:5px}.progress-fill{height:100%;background:linear-gradient(90deg,#28a745,#20c997);transition:width .5s ease}#onlineStatus{font-size:10px;font-weight:bold;padding:3px 8px;border-radius:10px;background:#f1c40f;color:#333;margin-top:5px;display:inline-block}.empty-state{text-align:center;padding:25px 10px;color:var(--text-muted);font-size:12px}.error-box{background:#f8d7da;color:#721c24;padding:10px;border-radius:6px;margin-bottom:12px;font-size:11px;display:none}
+.photo-preview{margin-top:8px;display:none}.photo-preview img{width:100%;max-height:180px;object-fit:contain;border:1px solid var(--border-color);border-radius:6px;background:#f8f9fa}.photo-actions{display:flex;gap:6px;margin-top:6px}.photo-actions button{flex:1}
+.photo-thumb{width:48px;height:48px;object-fit:cover;border-radius:5px;border:1px solid #ddd;cursor:pointer}.photo-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:2000;align-items:center;justify-content:center;padding:15px}.photo-modal img{max-width:100%;max-height:90vh;border-radius:8px}.photo-modal .close{position:absolute;right:15px;top:10px;color:#fff;font-size:30px;cursor:pointer}
+@media(max-width:500px){.form-row{flex-direction:column;gap:0}.stat-so-grid{grid-template-columns:repeat(2,1fr)}.filter-container>*{min-width:100%}table{min-width:720px}}
+@media(min-width:768px){.app-container{min-height:calc(100vh - 40px);margin-top:20px;border-radius:12px}.so-top-row{display:grid;grid-template-columns:1.5fr 1fr;gap:20px;margin-bottom:20px}.so-bottom-row{display:grid;grid-template-columns:1fr 2fr;gap:20px}}
+</style>
+</head>
+<body>
+<div class="app-container">
+<header>
+<h1 id="storeNameWrap"><span id="storeName">KODE TOKO: MENGHUBUNGKAN...</span><button type="button" class="store-settings-btn" onclick="gantiKodeToko()" title="Ganti Kode Toko" aria-label="Ganti Kode Toko"><i class="fas fa-cog"></i></button></h1>
+<p><i class="fas fa-boxes"></i> MPKT V.2 2026 - SUPABASE ONLINE</p>
+<div id="onlineStatus">Connecting...</div>
+</header>
+<nav><div class="nav-item active"><i class="fas fa-cloud"></i>Database SO Rak Online</div></nav>
+<main>
+<div id="errorBox" class="error-box"></div>
+<div class="so-top-row">
+<div class="card">
+<div class="card-header"><i class="fas fa-box"></i>Input Hasil SO Rak</div>
+<input type="hidden" id="soEditId">
+<input type="hidden" id="soExistingPhotoUrl">
+<div class="form-group"><label class="form-label">Rak / Area</label><div class="custom-dropdown-container"><input type="text" id="soRakInput" class="form-control" autocomplete="off" placeholder="🔍 Ketik atau pilih Rak..." oninput="filterCustomRak()" onfocus="bukaDropdownRak()"><div id="customRakList" class="custom-dropdown-list"></div></div></div>
+<div class="form-row">
+<div class="form-group"><label class="form-label">PIC / Petugas SO</label><input type="text" id="soPetugasInput" class="form-control" placeholder="Cth: Heri"></div>
+<div class="form-group"><label class="form-label">Tanggal SO</label><input type="date" id="soTanggalInput" class="form-control"></div>
+</div>
+<div class="form-row"><div class="form-group" style="flex:1.2"><label class="form-label">Nominal Selisih (Rp)</label><div style="display:flex;gap:5px"><div class="selisih-toggle"><button type="button" id="btnTglMinus" class="active-minus" onclick="setSelisih('-')">-</button><button type="button" id="btnTglPlus" onclick="setSelisih('+')">+</button></div><input type="hidden" id="soJenisSelisih" value="-"><input type="number" id="soNominalInput" class="form-control" placeholder="Cth: 31600" style="width:65%"></div></div></div>
+<div class="form-group"><label class="form-label">Keterangan</label><textarea id="soKeteranganInput" class="form-control" placeholder="Contoh: Barang rusak / salah input"></textarea></div>
+
+<div class="form-group">
+<label class="form-label"><i class="fas fa-camera"></i> Foto Bukti MINUS <span style="font-weight:400;color:#6c757d">(opsional, wajib jika MINUS)</span></label>
+<input type="file" id="soFotoInput" class="form-control" accept="image/*" capture="environment" onchange="previewFoto(event)">
+<div id="photoPreview" class="photo-preview"><img id="photoPreviewImg" alt="Preview bukti"><div class="photo-actions"><button type="button" class="btn btn-danger" onclick="hapusFotoPreview()"><i class="fas fa-times"></i> Hapus Foto</button></div></div>
+<div id="existingPhotoInfo" style="display:none;font-size:10px;color:#6c757d;margin-top:6px"></div>
+</div>
+
+<div class="btn-group-action"><button class="btn btn-primary" id="btnSimpanSO" onclick="simpanSO()"><i class="fas fa-cloud-upload-alt"></i> Simpan Online</button><button class="btn btn-secondary" onclick="resetFormSO()"><i class="fas fa-undo"></i> Reset</button></div>
+</div>
+
+<div class="card">
+<div class="card-header"><i class="fas fa-chart-pie"></i>Ringkasan Hasil SO</div>
+<div class="stat-so-grid">
+<div class="stat-so-box"><div class="num" id="statTotalRak">0</div><div class="label">Total Rak</div></div>
+<div class="stat-so-box"><div class="num" id="statRakPlus" style="color:var(--success-green)">0</div><div class="label">Rak Plus</div></div>
+<div class="stat-so-box"><div class="num" id="statRakMinus" style="color:var(--danger-red)">0</div><div class="label">Rak Minus</div></div>
+<div class="stat-so-box"><div class="num" id="statRakNol" style="color:var(--info-blue)">0</div><div class="label">Selisih Rp 0</div></div>
+</div>
+<div class="total-selisih-box"><div class="title">Total Selisih Rupiah</div><div class="value" id="totalSelisihBesar">Rp 0</div></div>
+<div style="font-size:10px;color:#6c757d;text-align:center">Foto bukti hanya disimpan untuk data MINUS.</div>
+</div>
+</div>
+
+<div class="so-bottom-row">
+<div class="card">
+<div class="card-header"><i class="fas fa-tasks"></i>Progress SO Rak</div>
+<div class="progress-bar"><div class="progress-fill" id="progressSORak" style="width:0%"></div></div>
+<div style="font-size:11px;text-align:center;font-weight:bold;margin-bottom:12px" id="textProgressSO">0 dari 0 Rak Terselesaikan (0%)</div>
+<div class="filter-container"><select id="filterCekRak" class="form-control" onchange="renderStatusRak()"><option value="semua">Tampilkan Semua Rak</option><option value="sudah">Tampilkan Yang SUDAH Saja</option><option value="belum">Tampilkan Yang BELUM Saja</option></select></div>
+<div id="listStatusRak" style="max-height:250px;overflow-y:auto;border:1px solid var(--border-color);border-radius:6px;padding:5px"></div>
+</div>
+
+<div class="card">
+<div class="card-header" style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><span><i class="fas fa-table"></i>Data Tersimpan di Supabase</span><button type="button" class="btn print-report-btn" onclick="cetakLaporanSO()" style="font-size:10px;padding:8px 10px;white-space:nowrap"><i class="fas fa-print"></i> Cetak Laporan</button><button type="button" class="btn btn-danger" onclick="resetSemuaSO()" style="font-size:10px;padding:8px 10px;white-space:nowrap"><i class="fas fa-trash-alt"></i> Reset Semua SO</button></div>
+<div class="filter-container">
+<input type="text" id="inputCari" class="form-control" placeholder="🔍 Cari rak/PIC..." oninput="renderSO()">
+<input type="date" id="filterTanggal" class="form-control" onchange="renderSO()">
+<select id="filterStatus" class="form-control" onchange="renderSO()">
+<option value="semua">Tampil Semua</option><option value="plus">Hanya Plus</option><option value="minus">Hanya Minus</option><option value="nol">Hanya Nol</option><option value="minus-terbesar">MINUS TERBESAR</option>
+</select>
+</div>
+<div class="table-responsive" style="margin-top:10px"><table><thead><tr><th>No</th><th>Rak / Area</th><th>PIC</th><th>Tanggal</th><th>Selisih</th><th>Status</th><th>Bukti</th><th>Aksi</th></tr></thead><tbody id="tbodySO"></tbody></table></div>
+</div>
+</div>
+</main>
+</div>
+
+
+<div id="reportPrintArea" style="display:none">
+  <div class="print-only-title">
+    <h2 style="text-align:center;margin-bottom:5px">LAPORAN HASIL STOCK OPNAME RAK</h2>
+    <div style="text-align:center;font-size:11px;margin-bottom:12px">
+      Kode Toko: <strong id="printKodeToko"></strong> |
+      Dicetak: <strong id="printWaktu"></strong>
+    </div>
+    <div id="printRingkasan" style="margin-bottom:12px"></div>
+  </div>
+  <table class="print-report-table">
+    <thead><tr><th style="width:6%">No</th><th style="width:25%">Rak / Area</th><th style="width:15%">PIC</th><th style="width:13%">Tanggal</th><th style="width:15%">Selisih</th><th style="width:11%">Status</th><th style="width:15%">Keterangan</th></tr></thead>
+    <tbody id="printTbodySO"></tbody>
+  </table>
+</div>
+
+<div id="photoModal" class="photo-modal" onclick="tutupModalFoto()"><span class="close">&times;</span><img id="modalPhoto" alt="Bukti foto" onclick="event.stopPropagation()"></div>
+
+<script>
+const SUPABASE_URL="https://cnicfxkffpmfvphlgqmi.supabase.co";
+const SUPABASE_REST_URL=SUPABASE_URL+"/rest/v1";
+const SUPABASE_PUBLISHABLE_KEY="sb_publishable_MUoal40LpsRgVH8rvmrYNA_xXlsW1-r";
+
+/* Nama bucket Storage yang harus dibuat di Supabase */
+const SUPABASE_BUCKET="so-bukti-minus";
+
+let kodeTokoAktif=localStorage.getItem("mpkt_kode_toko")||"I004";
+let dataSO=[],sedangMemuat=false,intervalSync=null;
+let fotoFileTerpilih=null;
+
+function supabaseHeaders(){return{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+SUPABASE_PUBLISHABLE_KEY,"Content-Type":"application/json","Accept":"application/json"}}
+function setStatus(text,color,textColor="#333"){const s=document.getElementById("onlineStatus");s.innerText=text;s.style.backgroundColor=color;s.style.color=textColor}
+function tampilkanError(pesan){const b=document.getElementById("errorBox");b.innerText=pesan;b.style.display="block"}
+function sembunyikanError(){const b=document.getElementById("errorBox");b.innerText="";b.style.display="none"}
+function validasiKodeToko(kode){return /^(?=.*[A-Z])(?=.*\d)[A-Z0-9]{4}$/.test(kode)}
+
+function cekKodeToko(){
+ if(!kodeTokoAktif||!validasiKodeToko(kodeTokoAktif)){
+  let input=prompt("Masukkan KODE TOKO Anda\n\nContoh: I004 atau AB12\n\nHarus 4 karakter dan terdiri dari huruf + angka:");
+  if(!input){alert("Kode Toko wajib diisi untuk menggunakan aplikasi!");cekKodeToko();return}
+  let f=input.trim().toUpperCase();
+  if(!validasiKodeToko(f)){alert("Format Kode Toko Salah!\n\nTepat 4 karakter dan harus ada huruf + angka.");cekKodeToko();return}
+  kodeTokoAktif=f;localStorage.setItem("mpkt_kode_toko",kodeTokoAktif)
+ }
+ document.getElementById("storeName").innerText="KODE TOKO: "+kodeTokoAktif;mulaiMendengarkanDatabase()
+}
+function gantiKodeToko(){
+ let input=prompt("Ganti Kode Toko\n\nContoh: I004 / AB12",kodeTokoAktif);if(!input)return;
+ let f=input.trim().toUpperCase();if(!validasiKodeToko(f)){alert("Format Salah!\nHarus tepat 4 karakter dan gabungan huruf + angka.");return}
+ kodeTokoAktif=f;localStorage.setItem("mpkt_kode_toko",kodeTokoAktif);document.getElementById("storeName").innerText="KODE TOKO: "+kodeTokoAktif;mulaiMendengarkanDatabase()
+}
+
+async function ambilDataSupabase(){
+ if(sedangMemuat)return;sedangMemuat=true;
+ try{
+  setStatus("Menghubungkan...","#f1c40f");sembunyikanError();
+  const url=SUPABASE_REST_URL+"/so_data?kode_toko=eq."+encodeURIComponent(kodeTokoAktif)+"&select=*&order=waktu_update.desc";
+  const r=await fetch(url,{headers:supabaseHeaders()});if(!r.ok)throw new Error("HTTP "+r.status+" - "+await r.text());
+  dataSO=await r.json();setStatus("Online & Tersinkronisasi","#2ecc71","white");renderSO()
+ }catch(e){console.error(e);setStatus("Gagal Terhubung","#dc3545","white");tampilkanError("Gagal mengambil data Supabase: "+e.message)}
+ finally{sedangMemuat=false}
+}
+function mulaiMendengarkanDatabase(){if(intervalSync){clearInterval(intervalSync);intervalSync=null}ambilDataSupabase();intervalSync=setInterval(ambilDataSupabase,3000)}
+
+function compressImage(file,maxSize=1280,quality=.72){
+ return new Promise((resolve,reject)=>{
+  const reader=new FileReader();reader.onload=e=>{
+   const img=new Image();img.onload=()=>{
+    let w=img.width,h=img.height;if(Math.max(w,h)>maxSize){if(w>h){h=Math.round(h*maxSize/w);w=maxSize}else{w=Math.round(w*maxSize/h);h=maxSize}}
+    const c=document.createElement("canvas");c.width=w;c.height=h;c.getContext("2d").drawImage(img,0,0,w,h);
+    c.toBlob(blob=>blob?resolve(blob):reject(new Error("Gagal kompres foto")),"image/jpeg",quality)
+   };img.onerror=()=>reject(new Error("File foto tidak valid"));img.src=e.target.result
+  };reader.onerror=()=>reject(new Error("Gagal membaca foto"));reader.readAsDataURL(file)
+ })
+}
+
+function previewFoto(e){
+ const file=e.target.files&&e.target.files[0];if(!file)return;
+ if(!file.type.startsWith("image/")){alert("Pilih file foto.");e.target.value="";return}
+ fotoFileTerpilih=file;
+ const reader=new FileReader();reader.onload=ev=>{document.getElementById("photoPreviewImg").src=ev.target.result;document.getElementById("photoPreview").style.display="block"};reader.readAsDataURL(file)
+}
+function hapusFotoPreview(){fotoFileTerpilih=null;document.getElementById("soFotoInput").value="";document.getElementById("photoPreview").style.display="none"}
+async function uploadFotoMinus(file,id){
+ const blob=await compressImage(file);
+ const safeId=String(id||Date.now()).replace(/[^a-zA-Z0-9_-]/g,"");
+ const path=kodeTokoAktif+"/"+safeId+"_"+Date.now()+".jpg";
+ const url=SUPABASE_URL+"/storage/v1/object/"+encodeURIComponent(SUPABASE_BUCKET)+"/"+path;
+ const r=await fetch(url,{method:"POST",headers:{"apikey":SUPABASE_PUBLISHABLE_KEY,"Authorization":"Bearer "+SUPABASE_PUBLISHABLE_KEY,"Content-Type":"image/jpeg","x-upsert":"true"},body:blob});
+ if(!r.ok)throw new Error("Upload foto gagal: "+await r.text());
+ return SUPABASE_URL+"/storage/v1/object/public/"+encodeURIComponent(SUPABASE_BUCKET)+"/"+path
+}
+async function hapusFotoStorage(photoUrl){
+ if(!photoUrl)return;
+ const marker="/storage/v1/object/public/"+SUPABASE_BUCKET+"/";const idx=photoUrl.indexOf(marker);if(idx<0)return;
+ const path=decodeURIComponent(photoUrl.substring(idx+marker.length));
+ const url=SUPABASE_URL+"/storage/v1/object/"+SUPABASE_BUCKET+"/"+path;
+ try{await fetch(url,{method:"DELETE",headers:supabaseHeaders()})}catch(e){console.warn("Gagal menghapus foto lama",e)}
+}
+
+async function simpanSO(){
+ const idEdit=document.getElementById("soEditId").value;
+ const rak=document.getElementById("soRakInput").value.trim(),pic=document.getElementById("soPetugasInput").value.trim(),tgl=document.getElementById("soTanggalInput").value,ket=document.getElementById("soKeteranganInput").value.trim();
+ const jenis=document.getElementById("soJenisSelisih").value,nominal=parseInt(document.getElementById("soNominalInput").value)||0;
+ if(!rak||!pic||!tgl){alert("Harap isi Rak, PIC, dan Tanggal!");return}
+ let val=nominal>0?(jenis==="-"?-Math.abs(nominal):Math.abs(nominal)):0;
+ if(val<0&&!fotoFileTerpilih&&!document.getElementById("soExistingPhotoUrl").value){alert("Untuk hasil MINUS, mohon lampirkan foto bukti kertas selisih.");return}
+ const btn=document.getElementById("btnSimpanSO");btn.disabled=true;btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+ try{
+  const existing=document.getElementById("soExistingPhotoUrl").value;
+  let payload={kode_toko:kodeTokoAktif,rak:rak.toUpperCase(),pic:pic.toUpperCase(),val,tgl,ket,waktu_update:Date.now()};
+  if(existing)payload.foto_url=existing;
+  let r;
+  if(idEdit){
+   r=await fetch(SUPABASE_REST_URL+"/so_data?id=eq."+encodeURIComponent(idEdit)+"&kode_toko=eq."+encodeURIComponent(kodeTokoAktif),{method:"PATCH",headers:{...supabaseHeaders(),"Prefer":"return=representation"},body:JSON.stringify(payload)})
+  }else{
+   r=await fetch(SUPABASE_REST_URL+"/so_data",{method:"POST",headers:{...supabaseHeaders(),"Prefer":"return=representation"},body:JSON.stringify(payload)})
+  }
+  if(!r.ok)throw new Error("HTTP "+r.status+" - "+await r.text());
+  const returned=await r.json();const saved=Array.isArray(returned)?returned[0]:returned;
+  let photoUrl=existing;
+  if(val<0&&fotoFileTerpilih){
+   photoUrl=await uploadFotoMinus(fotoFileTerpilih,saved&&saved.id||idEdit||Date.now());
+   const ur=await fetch(SUPABASE_REST_URL+"/so_data?id=eq."+encodeURIComponent(saved&&saved.id||idEdit)+"&kode_toko=eq."+encodeURIComponent(kodeTokoAktif),{method:"PATCH",headers:{...supabaseHeaders(),"Prefer":"return=minimal"},body:JSON.stringify({foto_url:photoUrl,waktu_update:Date.now()})});
+   if(!ur.ok)throw new Error("Foto sudah terupload tetapi gagal menyimpan URL foto: "+await ur.text());
+  }
+  alert(idEdit?"Data berhasil diperbarui di Supabase.":"Data berhasil disimpan ke Supabase.");
+  resetFormSO();await ambilDataSupabase()
+ }catch(e){console.error(e);alert("Gagal menyimpan data:\n\n"+e.message)}
+ finally{btn.disabled=false;btn.innerHTML='<i class="fas fa-cloud-upload-alt"></i> Simpan Online'}
+}
+
+async function hapusSO(id){
+ if(!id)return;if(!confirm("Hapus data SO ini dari Supabase?\n\nData dan foto buktinya akan dihapus."))return;
+ try{
+  setStatus("Menghapus...","#f39c12");const item=dataSO.find(x=>String(x.id)===String(id));
+  if(item&&item.foto_url)await hapusFotoStorage(item.foto_url);
+  const r=await fetch(SUPABASE_REST_URL+"/so_data?id=eq."+encodeURIComponent(id)+"&kode_toko=eq."+encodeURIComponent(kodeTokoAktif),{method:"DELETE",headers:{...supabaseHeaders(),"Prefer":"return=minimal"}});
+  if(!r.ok)throw new Error("HTTP "+r.status+" - "+await r.text());alert("Data berhasil dihapus.");await ambilDataSupabase()
+ }catch(e){alert("Gagal menghapus data:\n\n"+e.message);setStatus("Gagal","#dc3545","white")}
+}
+
+async function resetSemuaSO(){
+ const jumlah=dataSO.length;
+ if(!jumlah){alert("Tidak ada data SO untuk dihapus pada toko "+kodeTokoAktif+".");return}
+ const yakin=confirm("⚠️ RESET SEMUA SO\n\nSemua "+jumlah+" data SO untuk toko "+kodeTokoAktif+" akan dihapus dari Supabase.\n\nFoto bukti yang terkait juga akan dihapus dari Storage.\n\nData yang sudah dihapus tidak dapat dikembalikan.\n\nLanjutkan reset?");
+ if(!yakin)return;
+ try{
+  setStatus("Mereset semua SO...","#f39c12");
+  const fotoUrls=dataSO.map(x=>x.foto_url).filter(Boolean);
+  for(const url of fotoUrls){await hapusFotoStorage(url)}
+  const r=await fetch(SUPABASE_REST_URL+"/so_data?kode_toko=eq."+encodeURIComponent(kodeTokoAktif),{method:"DELETE",headers:{...supabaseHeaders(),"Prefer":"return=minimal"}});
+  if(!r.ok)throw new Error("HTTP "+r.status+" - "+await r.text());
+  dataSO=[];renderSO();renderStatusRak();
+  alert("Reset berhasil. Semua "+jumlah+" data SO toko "+kodeTokoAktif+" sudah dihapus.");
+  await ambilDataSupabase();
+ }catch(e){console.error(e);alert("Gagal reset semua SO:\n\n"+e.message);setStatus("Gagal","#dc3545","white")}
+}
+
+/* Daftar rak asli dari kode terakhir pengguna */
+const masterDataRak = [
+"AT1 - REG BEVERAGES 1","AU1 - CHILLER 1","AU2 - CHILLER 2","AU3 - CHILLER 3","AU4 - CHILLER 4","AU5 - CHILLER 5","AU6 - CHILLER 6","AU7 - CHILLER 7","AU8 - CHILLER 8","AZ1 - FDU GALON 5 LITER",
+"BC1 - BREAKFAST PN","BC2 - BREAKFAST PN","CB1 - SN ACR ROYCO","CF1 - SN WIRE RACK","CH1 - ACR/TRAY STAPLLE 1","CT1 - STAPLENEED PN","CT2 - STAPLENEED PN","CT3 - STAPLENEED PN","CT4 - STAPLENEED PN",
+"CW1 - NOODLE PN","CW2 - NOODLE PN","CW3 - NOODLE PN","DB1 - BISC+CONFECT-CONF 3 SSN","DD1 - BISC+CONFECT-CSP PEZ CANDY","DE1 - BISC+CONFECT 1","DE2 - BISC+CONFECT 1","DE3 - BISC+CONFECT 3","DE4 - BISC+CONFECT 4","DE5 - BISC+CONFECT 5","DE6 - BISC+CONFECT 6",
+"EB1 - SNACK-HEALTHY","EC1 - SNACK-WS A BRAND","ED1 - SNACK-WS SAMBOY 1","EE1 - SNACK-SIDE WS SAMBOY","EF1 - SNACK-CSP KIMBO","EI1 - SNACK 1","E12 - SNACK 2","E13 - SNACK 3","E14 - SNACK 4","E15 - SNACK 5","E16 - SNACK 6","EJ1 - PRINGLES DBL",
+"FE1 - MILK & DIAPERS PN 1","FE2 - MILK & DIAPERS PN 2","FE3 - MILK & DIAPERS PN 3","FE4 - MILK & DIAPERS PN 4","FE5 - MILK & DIAPERS PN 5","FE6 - MILK & DIAPERS PN 6","FE7 - MILK & DIAPERS PN 7","FE8 - MILK & DIAPERS PN 8",
+"GA1 - BW KIRI","GB1 - BW TENGAH","GB2 - BW KANAN","GD1 - TP ELEKTRIK","HB1 - MEJA COC ACC 1","HB2 - MEJA COC ACC 2","HB3 - MEJA COC ACC 3","HB4 - MEJA COC ACC 4","HB5- MEJA COC ACC 5","HB6 - MEJA COC ACC 6","HB7 - MEJA COC ACC 7",
+"HC1 - COC-ACR SILVERQUEEN","HD1 - COC-ACR CADBURY","HE1 - COC-ACR BATERAI HOOK","HF1 - COC-ACR BATERAI SUDUT","HG1 - COC-ACR KONDOM","HH1 - COC-ACR STREPSILS","HI1 - COC-ACR FISHERMAN'S","HL1 - COC-MINI COC","HM1 - COC-ACR CHUPA MEJA OLD","HN1 - COC-ACR CHUPA MEJA ACC","H01 - COC-AREA MATERAI",
+"HS1 - RAK TRAY NDS","HT1 - SOUR BELT 1M","JA1 - TOYS","JC1 - TOYS-STD ROTATING","KI1 - PC HB-ACR INSERT 1","KJ1 - PC HB-ACR HC 1","KL1 - ACR SHEET MASK 1 HB","K01 - PC HB-ACR DECOR 1","KP1 - PC HB-STD PINKBR 1","KS1 - PLU K ACR HAIR COLOR 3/KS1",
+"MC1 - MEDICINE-BABY-ACR 1","MD1 - MEDICINE-BABY-ACR 2","ME1 - MEDICINE-BABY-ACR 3","MI1 - MEDICINE & BABY CARE PN1","M12 - MEDICINE & BABY CARE PN2","NA1 - FREEZER ICE WALLS 1","NG1 - FREEZER ICW SHR GLICO-AICE 1","NP1 - FREEZER NUG BENFARM 1",
+"OA1 - BREAD CORNER 1","OA2 - BREAD CORNER 2","OC1 - TRAY KEJU","PA1 - RAK DISPLAY RTD SIAP SEDUH","PA2 - RAK TAMPUNG RTD SIAP SEDUH","PB1 - RAK DISPLAY ACR NOODLE CUP 1","PB2 - RAK DISPLAY ACR NOODLE CUP 2","PB3 - RAK TAMPUNG ACR NOODLE CUP",
+"Q31 - SANDULT 1R","Q32 - SANDULT 2R","Q41 - MISCSTA 1R","Q42 - MISCSTA 2R","Q51 - HH 1R","Q52 - HH 2R","Q53 - HH 3R NP","Q54 - HH 4R NP","Q55 - HH 5R NP","Q56 - HH 6R","Q61 - RAK ONEPRICE (1)",
+"QA1 - RAK TISSUE 1R","QF1 - ACR MISC","QG1 - WS MASKER (EX MOTORIS)","QH1 - WS/GD KARAKTER","QI1 - WDU CSP STICKER","QJ1 - WS AKSESORIS","QK1 - WS AIR FRESHNER","QL1 - WS UNDERWEAR","QM1 - SIDE WS AKSESORIS","Q01 - AREA AMPLOP FESTIVE",
+"QP1 - FDU SRK KERTAS KADO","QR1 - WS CORONA","QS1 - ACR STATIONARY BERTINGKAT","QU1 - ACR KAMPER","QX1 - STD MASKER B21","QY1 - ACR PET FOOD NEW","S11 - PERSONAL & TOOTH CARE 1","S12 - PERSONAL & TOOTH CARE 2","S13 - PERSONAL & TOOTH CARE","S14 - PERSONAL & TOOTH CARE 4","S15 - PERSONAL & TOOTH CARE 5","S16 - PERSONAL & TOOTH CARE 6","S17 - PERSONAL & TOOTH CARE 7","S18 - PERSONAL & TOOTH CARE 8",
+"Z31 - AMBALAN SIP","Z51 - RAK SO IC/AC/AM","ZAO - MACHINE ICE SLUSH","ZA1 - MACHINE LIPTON","ZA2 - MACHINE DELONGHI","ZA4 - MACHINE FRANKE","ZA5 - MACHINE HOTSIGN","ZA6 - ACR POJOK SEDUH","ZA7 - MACHINE MILO","ZA8 - MACHINE NESTLE KALINA","ZA9 - MACHINE POTUM","ZAA - MACHINE VENUSTA","ZABRAK RAW-RPC-CONDIMENT","ZAC - FREEZER ICE CUBE","ZAD - FREEZER BOILED","ZAE - OPEN FREZER A-YELLOW","ZAF - FREZER ES PUTER HOMI",
+"ZAG - BEANSPOT - RTD COFFE","ZAI - BEANSPOT - SHOWCASE BKRY FPG 1","ZAJ - BEANSPOT - SHOWCASE BKRY FPG 2","ZAK - BEANSPOT JOLLY TIME","ZAL - BEANSPOT BASIC - ACR RTD","ZAM - BEANSPOT BASIC - ACR SACHET","ZAN - ACR NOD CUP BSC","ZB1 - Z-E VOUCHER 1","ZB2 - Z-E VOUCHER 2",
+"ZC1 - Z-PLU K & SURAT TUGAS 1","ZC2 - Z-PLU K & SURAT TUGAS 2","ZC3 - Z-PLU K & SURAT TUGAS 3","ZC4 - Z-PLU K & SURAT TUGAS 4","ZC5 - Z-PLU K & SURAT TUGAS 5","ZD1 - Z-EMBALASI 1","ZG1 - Z-RAK ADD DIAPERS 1","ZI1 - Z-PROMOTION GOODS&BM 1","ZK1 - Z-GD ONESHOOT 1","ZL1 - Z-GD LOKALPOLITIS 1","ZM1 - RACK ON FREEZER","ZN1 - GB TAG NH FOOD","ZN2 - GB TAG NH NFOOD",
+"ZQ1 - Z-GDF AIR MINERAL 1.5","ZQ1Z - GDF AIR MINERAL 1.5","ZR1 - Z-FDU DISPLAY GALON","ZS1 - Z-FDU AIR CUP KARTON","ZS1 - ZFDU AIR CUP KARTON","ZU1 - FDU FOCUS TELUR","ZV1 - Z-FDU CORONA","ZW1 - FLOOR BAZAAR"
+];
+const uniqueMasterRak=[...new Set(masterDataRak)];
+
+function formatRupiah(a){return new Intl.NumberFormat("id-ID",{style:"currency",currency:"IDR",minimumFractionDigits:0}).format(a)}
+function formatTanggal(s){if(!s)return"";return new Date(s).toLocaleDateString("id-ID",{day:"2-digit",month:"2-digit",year:"numeric"})}
+function escapeHTML(v){return v==null?"":String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#039;")}
+
+function renderCustomRakList(t=""){
+ const c=document.getElementById("customRakList");c.innerHTML="";
+ const f=uniqueMasterRak.filter(r=>r.toLowerCase().includes(t.toLowerCase()));
+ if(!f.length){c.innerHTML='<div class="custom-dropdown-item">Rak tidak ditemukan</div>';return}
+ f.forEach(r=>{const x=document.createElement("div");x.className="custom-dropdown-item";x.innerText=r;x.onclick=()=>{document.getElementById("soRakInput").value=r;c.style.display="none"};c.appendChild(x)})
+}
+function bukaDropdownRak(){renderCustomRakList(document.getElementById("soRakInput").value);document.getElementById("customRakList").style.display="block"}
+function filterCustomRak(){bukaDropdownRak()}
+document.addEventListener("click",e=>{if(!e.target.closest(".custom-dropdown-container"))document.getElementById("customRakList").style.display="none"})
+
+function setSelisih(j){
+ document.getElementById("soJenisSelisih").value=j;
+ document.getElementById("btnTglMinus").classList.toggle("active-minus",j==="-");
+ document.getElementById("btnTglPlus").classList.toggle("active-plus",j==="+");
+}
+function renderStatusRak(){
+ const c=document.getElementById("listStatusRak"),f=document.getElementById("filterCekRak").value;
+ const done=[...new Set(dataSO.map(x=>String(x.rak||"").toUpperCase()).filter(Boolean))];let n=0,h="";
+ uniqueMasterRak.forEach(r=>{const ok=done.includes(r.toUpperCase());if(ok)n++;if((f==="sudah"&&!ok)||(f==="belum"&&ok))return;h+=`<div class="rak-item"><span class="rak-name">${escapeHTML(r)}</span><span class="status-badge ${ok?"status-sudah":"status-belum"}">${ok?"✓ SUDAH":"◷ BELUM"}</span></div>`});
+ c.innerHTML=h||'<div class="empty-state">Tidak ada data untuk ditampilkan.</div>';
+ const p=uniqueMasterRak.length?n/uniqueMasterRak.length*100:0;document.getElementById("progressSORak").style.width=p+"%";document.getElementById("textProgressSO").innerText=`${n} dari ${uniqueMasterRak.length} Rak Terselesaikan (${p.toFixed(1)}%)`
+}
+
+function renderSO(){
+ const tbody=document.getElementById("tbodySO"),kw=document.getElementById("inputCari").value.toLowerCase().trim(),fs=document.getElementById("filterStatus").value,ft=document.getElementById("filterTanggal").value;
+ let plus=0,minus=0,nol=0,total=0;
+ dataSO.forEach(x=>{const v=Number(x.val||0);total+=v;if(v>0)plus++;else if(v<0)minus++;else nol++});
+ document.getElementById("statTotalRak").innerText=dataSO.length;document.getElementById("statRakPlus").innerText=plus;document.getElementById("statRakMinus").innerText=minus;document.getElementById("statRakNol").innerText=nol;
+ const box=document.getElementById("totalSelisihBesar");box.innerText=total<0?"- "+formatRupiah(Math.abs(total)):formatRupiah(total);box.style.color=total<0?"#e74c3c":total>0?"#2ecc71":"#fff";
+ let arr=[...dataSO].filter(x=>{const r=String(x.rak||"").toLowerCase(),p=String(x.pic||"").toLowerCase(),v=Number(x.val||0);if(!(r.includes(kw)||p.includes(kw)))return false;if(ft&&x.tgl!==ft)return false;if(fs==="plus"&&v<=0)return false;if(fs==="minus"&&v>=0)return false;if(fs==="nol"&&v!==0)return false;if(fs==="minus-terbesar"&&v>=0)return false;return true});
+ if(fs==="minus-terbesar")arr.sort((a,b)=>Number(a.val||0)-Number(b.val||0));else arr.sort((a,b)=>Number(b.waktu_update||0)-Number(a.waktu_update||0));
+ if(!arr.length){tbody.innerHTML='<tr><td colspan="8"><div class="empty-state">Belum ada data SO untuk ditampilkan.</div></td></tr>'}
+ else tbody.innerHTML=arr.map((x,i)=>{const v=Number(x.val||0),pl=v>0,n=v===0,txt=pl?"+ "+formatRupiah(v):n?formatRupiah(0):"- "+formatRupiah(Math.abs(v));return `<tr><td>${i+1}</td><td><strong>${escapeHTML(x.rak)}</strong></td><td>${escapeHTML(x.pic)}</td><td>${formatTanggal(x.tgl)}</td><td style="color:${pl?"var(--success-green)":n?"#333":"var(--danger-red)"};font-weight:bold;white-space:nowrap">${txt}</td><td><span class="status-badge ${pl?"status-sudah":n?"":"status-belum"}" style="${n?"background:#e9ecef;color:#495057":""}">${pl?"PLUS":n?"NIHIL":"MINUS"}</span></td><td>${x.foto_url?`<img class="photo-thumb" src="${escapeHTML(x.foto_url)}" onclick="bukaModalFoto('${escapeHTML(x.foto_url)}')" title="Lihat bukti">`:"-"}</td><td><div class="action-group"><button class="btn-action-sm btn-edit" onclick="editSO('${escapeHTML(x.id)}')"><i class="fas fa-edit"></i></button><button class="btn-action-sm btn-del" onclick="hapusSO('${escapeHTML(x.id)}')"><i class="fas fa-trash"></i></button></div></td></tr>`}).join("");
+ renderStatusRak()
+}
+function editSO(id){
+ const x=dataSO.find(d=>String(d.id)===String(id));if(!x)return alert("Data tidak ditemukan.");
+ document.getElementById("soEditId").value=x.id;document.getElementById("soRakInput").value=x.rak||"";document.getElementById("soPetugasInput").value=x.pic||"";document.getElementById("soTanggalInput").value=x.tgl||"";document.getElementById("soKeteranganInput").value=x.ket||"";document.getElementById("soExistingPhotoUrl").value=x.foto_url||"";
+ const v=Number(x.val||0);setSelisih(v<0?"-":"+");document.getElementById("soNominalInput").value=Math.abs(v);
+ const info=document.getElementById("existingPhotoInfo");if(x.foto_url){info.style.display="block";info.innerText="Sudah ada foto bukti. Pilih foto baru jika ingin menggantinya."}else info.style.display="none";
+ document.getElementById("btnSimpanSO").innerHTML='<i class="fas fa-save"></i> Update Online';window.scrollTo({top:0,behavior:"smooth"})
+}
+function resetFormSO(){
+ document.getElementById("soEditId").value="";document.getElementById("soExistingPhotoUrl").value="";document.getElementById("soRakInput").value="";document.getElementById("soPetugasInput").value="";setSelisih("-");document.getElementById("soNominalInput").value="";document.getElementById("soTanggalInput").value=new Date().toISOString().split("T")[0];document.getElementById("soKeteranganInput").value="";document.getElementById("soFotoInput").value="";fotoFileTerpilih=null;document.getElementById("photoPreview").style.display="none";document.getElementById("existingPhotoInfo").style.display="none";document.getElementById("btnSimpanSO").innerHTML='<i class="fas fa-cloud-upload-alt"></i> Simpan Online'
+}
+function bukaModalFoto(url){document.getElementById("modalPhoto").src=url;document.getElementById("photoModal").style.display="flex"}
+function tutupModalFoto(){document.getElementById("photoModal").style.display="none";document.getElementById("modalPhoto").src=""}
+
+
+function cetakLaporanSO(){
+  if(!dataSO.length){
+    alert("Belum ada data SO untuk dicetak.");
+    return;
+  }
+
+  const kw=document.getElementById("inputCari").value.toLowerCase().trim();
+  const fs=document.getElementById("filterStatus").value;
+  const ft=document.getElementById("filterTanggal").value;
+
+  let arr=[...dataSO].filter(x=>{
+    const r=String(x.rak||"").toLowerCase();
+    const p=String(x.pic||"").toLowerCase();
+    const v=Number(x.val||0);
+    if(!(r.includes(kw)||p.includes(kw)))return false;
+    if(ft&&x.tgl!==ft)return false;
+    if(fs==="plus"&&v<=0)return false;
+    if(fs==="minus"&&v>=0)return false;
+    if(fs==="nol"&&v!==0)return false;
+    if(fs==="minus-terbesar"&&v>=0)return false;
+    return true;
+  });
+
+  if(fs==="minus-terbesar") arr.sort((a,b)=>Number(a.val||0)-Number(b.val||0));
+  else arr.sort((a,b)=>Number(b.waktu_update||0)-Number(a.waktu_update||0));
+
+  if(!arr.length){
+    alert("Tidak ada data yang sesuai dengan filter untuk dicetak.");
+    return;
+  }
+
+  let plus=0,minus=0,nol=0,total=0;
+  arr.forEach(x=>{
+    const v=Number(x.val||0);
+    total+=v;
+    if(v>0)plus++; else if(v<0)minus++; else nol++;
+  });
+
+  document.getElementById("printKodeToko").innerText=kodeTokoAktif;
+  document.getElementById("printWaktu").innerText=new Date().toLocaleString("id-ID");
+  document.getElementById("printRingkasan").innerHTML=
+    `Total Data: <strong>${arr.length}</strong> &nbsp; | &nbsp; `+
+    `PLUS: <strong>${plus}</strong> &nbsp; | &nbsp; `+
+    `MINUS: <strong>${minus}</strong> &nbsp; | &nbsp; `+
+    `NIHIL: <strong>${nol}</strong> &nbsp; | &nbsp; `+
+    `Total Selisih: <strong>${total<0?"- ":""}${formatRupiah(Math.abs(total))}</strong>`;
+
+  document.getElementById("printTbodySO").innerHTML=arr.map((x,i)=>{
+    const v=Number(x.val||0);
+    const txt=v>0?"+ "+formatRupiah(v):v<0?"- "+formatRupiah(Math.abs(v)):formatRupiah(0);
+    const status=v>0?"PLUS":v<0?"MINUS":"NIHIL";
+    return `<tr>
+      <td>${i+1}</td>
+      <td>${escapeHTML(x.rak)}</td>
+      <td>${escapeHTML(x.pic)}</td>
+      <td>${formatTanggal(x.tgl)}</td>
+      <td>${txt}</td>
+      <td>${status}</td>
+      <td>${escapeHTML(x.ket||"-")}</td>
+    </tr>`;
+  }).join("");
+
+  window.print();
+}
+
+window.addEventListener("load",()=>{document.getElementById("soTanggalInput").value=new Date().toISOString().split("T")[0];document.getElementById("storeName").innerText="KODE TOKO: "+kodeTokoAktif;renderStatusRak();cekKodeToko()});
+</script>
+</body>
+</html>
